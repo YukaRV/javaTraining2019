@@ -1,0 +1,5 @@
+Q. Vehicleクラス、LinkedListクラスは可変長の引数をとる必要があるか。
+A. Vehicleクラスは不要、LinkedListは必要。
+　Vehicleは意味的に並列扱いできるものを保持していない。
+　LinkedListはfirst、first.next, first.next.next, ...とLinkedListが連なっているため、
+　これをまとめることでリストをまるごと生成できる。
