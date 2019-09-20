@@ -1,9 +1,7 @@
-package jpl.test.ch01.ex15;
+package ch01.ex15;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.Test;
-
-import jpl.src.ch01.ex15.MyHash;
 
 public class MyHashTest {
 	MyHash h = new MyHash();

@@ -1,9 +1,7 @@
-package jpl.test.ch02.ex15;
+package ch02.ex15;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-
-import jpl.src.ch02.ex15.Vehicle;
 
 public class VehicleTest {
    @Test

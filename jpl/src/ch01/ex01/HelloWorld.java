@@ -1,4 +1,4 @@
-package jpl.src.ch01.ex01;
+package ch01.ex01;
 
 public class HelloWorld {
 	// 1.1 Hello worldの表示

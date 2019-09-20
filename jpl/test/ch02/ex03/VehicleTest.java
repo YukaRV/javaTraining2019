@@ -1,9 +1,7 @@
-package jpl.test.ch02.ex03;
+package ch02.ex03;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.Test;
-
-import jpl.src.ch02.ex03.Vehicle;
 
 public class VehicleTest {
    @Test

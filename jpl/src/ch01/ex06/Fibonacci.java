@@ -1,4 +1,4 @@
-package jpl.src.ch01.ex06;
+package ch01.ex06;
 
 class Fibonacci {
 	// 1.6 add title (use constant) output-list of Fibonacci program

@@ -1,6 +1,6 @@
-package jpl.src.ch01.ex15;
+package ch01.ex15;
 
-class MyHashTest {
+class MyHashLocalTest {
 	// 1.15 write interface extends Lookup
 	public static void main(String[] args) {
 		MyHash h = new MyHash();

@@ -1,9 +1,9 @@
-package jpl.test.ch02.ex09;
+package ch02.ex09;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.Test;
 
-import jpl.src.ch02.ex09.Vehicle;
+import ch02.ex09.Vehicle;
 
 public class VehicleTest {
    @Test

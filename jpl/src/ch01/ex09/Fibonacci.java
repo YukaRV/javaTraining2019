@@ -1,4 +1,4 @@
-package jpl.src.ch01.ex09;
+package ch01.ex09;
 
 class Fibonacci {
 	// 1.9 use array

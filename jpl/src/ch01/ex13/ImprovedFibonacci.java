@@ -1,4 +1,4 @@
-package jpl.src.ch01.ex13;
+package ch01.ex13;
 
 class ImprovedFibonacci {
 	// 1.13 use printf

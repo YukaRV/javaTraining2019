@@ -1,4 +1,4 @@
-package jpl.src.ch01.ex16;
+package ch01.ex16;
 
 class MyUtilitiesTest {
 	public static void main(String[] args) throws BadDataSetException{

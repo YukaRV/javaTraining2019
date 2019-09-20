@@ -1,4 +1,4 @@
-package jpl.src.ch02.ex16;
+package ch02.ex16;
 
 public class LinkedList{
 	private Object obj;

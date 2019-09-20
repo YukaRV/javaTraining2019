@@ -1,4 +1,4 @@
-package jpl.src.ch01.ex07;
+package ch01.ex07;
 
 class ImprovedFibonacci {
 	// 1.7 rewrite ImprovedFibonacci that i is decrease

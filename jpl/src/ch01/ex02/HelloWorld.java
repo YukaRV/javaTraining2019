@@ -1,4 +1,4 @@
-package jpl.src.ch01.ex02;
+package ch01.ex02;
 
 public class HelloWorld {
 	// 1.2 エラー調査

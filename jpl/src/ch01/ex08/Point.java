@@ -1,4 +1,4 @@
-package jpl.src.ch01.ex08;
+package ch01.ex08;
 
 class Point {
 	// 1.8 add set method

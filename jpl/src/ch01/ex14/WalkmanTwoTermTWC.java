@@ -1,4 +1,4 @@
-package jpl.src.ch01.ex14;
+package ch01.ex14;
 
 class WalkmanTwoTermTWC extends WalkmanTwoTerm{
 	public void twoWayCommunicaton(){

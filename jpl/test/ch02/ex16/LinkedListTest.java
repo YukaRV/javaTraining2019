@@ -1,10 +1,10 @@
-package jpl.test.ch02.ex16;
+package ch02.ex16;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import jpl.src.ch02.ex16.LinkedList;
-import jpl.src.ch02.ex16.Vehicle;
+import ch02.ex16.LinkedList;
+import ch02.ex16.Vehicle;
 
 public class LinkedListTest {
    @Test

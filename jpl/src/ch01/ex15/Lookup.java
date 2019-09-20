@@ -1,4 +1,4 @@
-package jpl.src.ch01.ex15;
+package ch01.ex15;
 
 interface LookUp {
 	/** return value of relating name

@@ -1,4 +1,4 @@
-package jpl.src.ch01.ex12;
+package ch01.ex12;
 
 class ExpNum{
 	int num;

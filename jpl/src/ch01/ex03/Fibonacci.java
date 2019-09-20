@@ -1,4 +1,4 @@
-package jpl.src.ch01.ex03;
+package ch01.ex03;
 
 class Fibonacci {
 	// 1.3 add title output-list of Fibonacci program

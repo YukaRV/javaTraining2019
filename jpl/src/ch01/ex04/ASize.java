@@ -1,4 +1,4 @@
-package jpl.src.ch01.ex04;
+package ch01.ex04;
 
 class ASize {
 	// 1.4 create a program that generates some sequence (ex: square table)

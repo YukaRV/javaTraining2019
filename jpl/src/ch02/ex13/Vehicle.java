@@ -1,4 +1,4 @@
-package jpl.src.ch02.ex13;
+package ch02.ex13;
 
 class Vehicle {
 	// 2.13

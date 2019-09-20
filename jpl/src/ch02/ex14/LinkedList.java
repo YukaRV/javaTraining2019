@@ -1,4 +1,4 @@
-package jpl.src.ch02.ex14;
+package ch02.ex14;
 
 class LinkedList{
 	// 2.14

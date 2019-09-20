@@ -1,4 +1,4 @@
-package jpl.src.ch01.ex15;
+package ch01.ex15;
 
 public class MyHash {
 	private String[] names = new String[0];

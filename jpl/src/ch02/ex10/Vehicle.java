@@ -1,4 +1,4 @@
-package jpl.src.ch02.ex10;
+package ch02.ex10;
 
 class Vehicle {
 	private double speed,degree;

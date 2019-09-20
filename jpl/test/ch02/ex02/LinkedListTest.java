@@ -1,9 +1,7 @@
-package jpl.test.ch02.ex02;
+package ch02.ex02;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.Test;
-
-import jpl.src.ch02.ex02.LinkedList;
 
 public class LinkedListTest {
    @Test
