@@ -27,7 +27,7 @@ public class DigitalClock extends Frame implements Runnable,WindowListener,Compo
 
 
     public static void main(String[] args) {
-    	JOptionPane.showMessageDialog(null, "ディレクトリ構成にsrcはいらないぞ");
+    	JOptionPane.showMessageDialog(null, "TODO: ディレクトリ構成からsrcを消す\n　　　Jarを生成する");
     	DigitalClock dc = new DigitalClock();
 		Thread thread = new Thread(dc);
 		thread.start();
