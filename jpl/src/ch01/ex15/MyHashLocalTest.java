@@ -4,7 +4,6 @@ class MyHashLocalTest {
 	// 1.15 write interface extends Lookup
 	public static void main(String[] args) {
 		MyHash h = new MyHash();
-		Object a = "value";
 		h.add("test1","value1");
 		h.add("test2","value2");
 		h.add("test3","value3");

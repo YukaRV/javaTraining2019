@@ -5,10 +5,8 @@ class ImprovedFibonacci {
 	static final int MAX_INDEX = 9;
 
 	static ExpNum[] calcFib() {
-		if (MAX_INDEX <= 0) return null;
 		ExpNum[] fib = new ExpNum[MAX_INDEX];
 		fib[0] = new ExpNum(1);
-		if (MAX_INDEX == 1) return fib;
 		fib[1] = new ExpNum(1);
 
 		for (int i = 2;i < MAX_INDEX; i++) {

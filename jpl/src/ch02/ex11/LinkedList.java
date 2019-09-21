@@ -51,12 +51,10 @@ class LinkedList{
 		vs.next().setNext(bicycle1);
 
 		LinkedList iter = vs;
-		Vehicle v;
 
 		while (iter != null) {
 			System.out.println(iter);
 			System.out.println();
-			v = (Vehicle)(iter.obj);
 			iter = iter.next();
 		}
 	}
