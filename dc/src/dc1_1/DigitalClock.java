@@ -14,7 +14,11 @@ import java.util.Calendar;
 
 import javax.swing.JOptionPane;
 
-
+/**
+ * デジタル時計を描画する
+ * @author p000527465
+ *
+ */
 public class DigitalClock extends Frame implements Runnable,WindowListener,ComponentListener{
 	int width = 500, height = 200;
 
@@ -25,10 +29,9 @@ public class DigitalClock extends Frame implements Runnable,WindowListener,Compo
 	private String hhmmss;
 	private String yyyymmdd;
 
-
-    public static void main(String[] args) {
-    	JOptionPane.showMessageDialog(null, "TODO: ディレクトリ構成からsrcを消す\n　　　Jarを生成する");
-    	DigitalClock dc = new DigitalClock();
+	public static void main(String[] args) {
+		JOptionPane.showMessageDialog(null, "TODO: ディレクトリ構成からsrcを消す\n　　　Jarを生成する");
+		DigitalClock dc = new DigitalClock();
 		Thread thread = new Thread(dc);
 		thread.start();
     }
@@ -62,7 +65,7 @@ public class DigitalClock extends Frame implements Runnable,WindowListener,Compo
 	@Override
 	public void run() {
 		while (true) {
-			// get now time
+			// 日時情報の更新(描画用文字列は更新されない)
 			date = Calendar.getInstance();
 			repaint();
 			try {
@@ -79,6 +82,10 @@ public class DigitalClock extends Frame implements Runnable,WindowListener,Compo
 	 * 描画メソッド
 	 */
 	public void paint(Graphics g) {
+		// 一緒にアナログっぽい時計も描画したい
+
+
+		// 描画用文字列の更新
 		hhmmss = timeToString();
 		yyyymmdd = dateToString();
 		int fontSize = getFont().getSize();
@@ -89,18 +96,35 @@ public class DigitalClock extends Frame implements Runnable,WindowListener,Compo
 	// accessor
 
 	// utility
+	/**
+	 * 時刻をdateから取得し、hh:mm:ssの形で返す
+	 * @return hh:mm:ss
+	 */
 	public String timeToString() {
-		String h = convertDigitString(date.get( Calendar.HOUR_OF_DAY ),2);
-		String m = convertDigitString(date.get( Calendar.MINUTE ),2);
-		String s = convertDigitString(date.get( Calendar.SECOND ),2);
-		return h+":"+m+":"+s;
+		String hh = convertDigitString(date.get( Calendar.HOUR_OF_DAY ),2);
+		String mm = convertDigitString(date.get( Calendar.MINUTE ),2);
+		String ss = convertDigitString(date.get( Calendar.SECOND ),2);
+		return hh+":"+mm+":"+ss;
 	}
+
+	/**
+	 * 時刻をdateから取得し、yyyy/mm/ddの形で返す
+	 * @return yyyy/mm/dd
+	 */
 	public String dateToString() {
 		String yyyy = convertDigitString(date.get( Calendar.YEAR ),4);
 		String mm = convertDigitString(date.get( Calendar.MONTH ),2);
 		String dd = convertDigitString(date.get( Calendar.DAY_OF_MONTH ),2);
 		return yyyy+"/"+mm+"/"+dd;
 	}
+	/**
+	 * 数値numをdigit桁の文字列にして返す
+	 * (2019,2)	-> 19
+	 * (3,4)	-> 0003
+	 * @param num 桁を修正したい整数
+	 * @param digit 修正後の桁数
+	 * @return 修正したnum
+	 */
 	public String convertDigitString(int num,int digit) {
 		// digitを越えた桁を削除
 		num %= (int)( Math.pow(10,digit));
@@ -108,6 +132,13 @@ public class DigitalClock extends Frame implements Runnable,WindowListener,Compo
 		return String.format(format, num);
 	}
 
+	/**
+	 * x,yを中心となるようdrawStringする
+	 * @param g 描画に使うGraphics
+	 * @param text 描画したい文字
+	 * @param x 中心座標
+	 * @param y 中心座標
+	 */
 	public static void drawStringCenter(Graphics g,String text,int x,int y){
 		FontMetrics fontMet = g.getFontMetrics();
 		Rectangle textRect = fontMet.getStringBounds(text, g).getBounds();
