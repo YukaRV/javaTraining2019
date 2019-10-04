@@ -1,0 +1,2 @@
+Q. もし、あるとしたら、VehicleとPassengerVehicleのどのメソッドをfinalにするのが適切ですか。
+A. getterメソッドは、今回の場合変数に対応させているためfinalが適切である。

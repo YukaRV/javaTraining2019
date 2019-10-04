@@ -1,6 +1,10 @@
-package ch03.ex01;
+package ch03.ex08;
 
-class Vehicle {
+// VehicleとPassengerVehicleをCloneable型にしなさい。
+// 複製に関して、4つの選択肢のどれを選択すべきでしょうか。
+// Object.cloneによる単純なコピーは、それらのクラスのcloneメソッドとしては正しいですか。
+
+class Vehicle implements Cloneable{
 	private double speed,degree;
 	private String owner;
 	public static final String TURN_LEFT = "TURN_LEFT";
@@ -9,6 +13,8 @@ class Vehicle {
 	private static int singleIdNext;
 	private int singleId;
 
+	EnergySource es;
+
 	public Vehicle() {
 		this("unknown",0,0);
 	}
@@ -16,10 +22,14 @@ class Vehicle {
 		this(owner,0,0);
 	}
 	public Vehicle(String owner, double speed, double degree) {
-		singleId = singleIdNext++;
+		setId();
 		this.owner = owner;
 		setSpeed(speed);
 		setDegree(degree);
+		es = new GasTank(100);
+	}
+	private void setId() {
+		singleId = singleIdNext++;
 	}
 
 	public double getSpeed() {
@@ -70,11 +80,29 @@ class Vehicle {
 		return (singleIdNext-1);
 	}
 
+	public void start() {
+		if (!es.empty()) {
+			System.out.println("started.");
+		}
+	}
+
 	@Override
 	public String toString() {
 		String txt = getId() + ": "+getOwner() + "'s vehicle";
 		txt += "\n";
 		txt += getSpeed()+" (m/s), "+getDegree() + " (degree)";
 		return txt;
+	}
+
+	@Override
+	public Vehicle clone(){
+		Vehicle cloneVehicle;
+		try {
+			cloneVehicle = (Vehicle)(super.clone());
+		} catch (CloneNotSupportedException e) {
+			throw new InternalError(e.toString());
+		}
+		cloneVehicle.setId();
+		return cloneVehicle;
 	}
 }

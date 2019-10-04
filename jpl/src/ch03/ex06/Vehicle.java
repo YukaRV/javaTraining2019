@@ -1,4 +1,10 @@
-package ch03.ex01;
+package ch03.ex06;
+
+// Vehicleを変更して、コンストラクタでVehicleと関連付けされるEnergySourceオブジェクトの
+// 参照を持つようにしなさい。EnergySourceクラスは、abstractクラスでなければなりません。
+// なぜならば、GasTankオブジェクトの満タンの測定の方法は、Batteryオブジェクトとは異なるでしょう。
+// EnergySourceにabstractのemptyメソッドを入れて、GasTankとBatteryクラスでそのメソッドを
+// 実装しなさい。動力源が空でないことを保証するstartメソッドをVehicleに追加しなさい。
 
 class Vehicle {
 	private double speed,degree;
@@ -9,6 +15,8 @@ class Vehicle {
 	private static int singleIdNext;
 	private int singleId;
 
+	EnergySource es;
+
 	public Vehicle() {
 		this("unknown",0,0);
 	}
@@ -16,10 +24,14 @@ class Vehicle {
 		this(owner,0,0);
 	}
 	public Vehicle(String owner, double speed, double degree) {
-		singleId = singleIdNext++;
+		setId();
 		this.owner = owner;
 		setSpeed(speed);
 		setDegree(degree);
+		es = new GasTank(100);
+	}
+	private void setId() {
+		singleId = singleIdNext++;
 	}
 
 	public double getSpeed() {
@@ -68,6 +80,12 @@ class Vehicle {
 	}
 	public static int getMaxId() {
 		return (singleIdNext-1);
+	}
+
+	public void start() {
+		if (!es.empty()) {
+			System.out.println("started.");
+		}
 	}
 
 	@Override

@@ -1,32 +1,24 @@
-package ch03.ex01;
+package ch03.ex10;
 
-class Vehicle {
+public class Vehicle {
 	private double speed,degree;
-	private String owner;
-	public static final String TURN_LEFT = "TURN_LEFT";
-	public static final String TURN_RIGHT = "TURN_RIGHT";
+	private String owner = "unknown";
 
 	private static int singleIdNext;
 	private int singleId;
-
 	public Vehicle() {
-		this("unknown",0,0);
+		singleId = singleIdNext++;
 	}
 	public Vehicle(String owner) {
-		this(owner,0,0);
-	}
-	public Vehicle(String owner, double speed, double degree) {
-		singleId = singleIdNext++;
+		this();
 		this.owner = owner;
-		setSpeed(speed);
-		setDegree(degree);
 	}
 
 	public double getSpeed() {
 		return speed;
 	}
 	public void setSpeed(double s) {
-		if (s >= 0) speed = s;
+		speed = s;
 	}
 	public void changeSpeed(double s) {
 		setSpeed(s);
@@ -43,17 +35,7 @@ class Vehicle {
 		if (d >= 0)
 			degree = d%maxDeg;
 		else
-			degree = maxDeg-(-d%maxDeg);
-	}
-
-	public void turn(double d) {
-		setDegree(degree+d);
-	}
-	public void turn(String d) {
-		if (d == Vehicle.TURN_LEFT)
-			System.out.println("TURN LEFT");
-		else if (d == Vehicle.TURN_RIGHT)
-			System.out.println("TURN RIGHT");
+			degree = maxDeg-(-d%maxDeg);// TODO test
 	}
 
 	public String getOwner() {
@@ -76,5 +58,15 @@ class Vehicle {
 		txt += "\n";
 		txt += getSpeed()+" (m/s), "+getDegree() + " (degree)";
 		return txt;
+	}
+
+	public static void main(String[] args) {
+		Vehicle car1 = new Vehicle("Taro");
+		car1.changeSpeed(100);
+		System.out.println(car1);
+		System.out.println();
+		car1.stop();
+		System.out.println(car1);
+		System.out.println();
 	}
 }
