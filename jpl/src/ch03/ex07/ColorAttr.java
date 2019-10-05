@@ -5,11 +5,17 @@ package ch03.ex07;
 class ColorAttr extends Attr{
 	public static void main(String[] args) {
 		ColorAttr ca1 = new ColorAttr("black",0);
-		ColorAttr ca2 = new ColorAttr("red");
+		ColorAttr ca2 = new ColorAttr("red","ff0000");
 		ColorAttr ca3 = new ColorAttr("black");
+		ColorAttr ca4 = new ColorAttr("black",0);
+		System.out.println(ca1.getColor());
+		System.out.println(ca2.getColor());
+		System.out.println(ca3.getColor());
+		System.out.println(ca4.getColor());
 		System.out.println(ca1.hashCode());
 		System.out.println(ca2.hashCode());
 		System.out.println(ca3.hashCode());
+		System.out.println(ca4.hashCode());
 		System.out.println(ca1.equals(ca2));
 		System.out.println(ca2.equals(ca3));
 		System.out.println(ca3.equals(ca1));
@@ -73,7 +79,7 @@ class ColorAttr extends Attr{
 	@Override
 	public int hashCode() {
 		// getValue入れられる？
-		return getName().hashCode();
+		return (getName()+"_"+getValue()).hashCode();
 	}
 
 }

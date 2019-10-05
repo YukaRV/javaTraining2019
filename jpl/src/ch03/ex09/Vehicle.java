@@ -1,9 +1,5 @@
 package ch03.ex09;
 
-// VehicleとPassengerVehicleをCloneable型にしなさい。
-// 複製に関して、4つの選択肢のどれを選択すべきでしょうか。
-// Object.cloneによる単純なコピーは、それらのクラスのcloneメソッドとしては正しいですか。
-
 class Vehicle implements Cloneable{
 	private double speed,degree;
 	private String owner;

@@ -5,6 +5,7 @@ class Battery extends EnergySource{
 	private double battery;
 	public Battery(double capacity) {
 		BATTERY_CAPACITY = capacity;
+		battery = capacity;
 	}
 	public boolean empty() {
 		if (battery > 0) return false;

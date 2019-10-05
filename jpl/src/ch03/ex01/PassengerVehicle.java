@@ -61,6 +61,6 @@ class PassengerVehicle extends Vehicle{
 		System.out.println(pv.getNumOfSitting());
 		pv.setNumOfSitting(4);
 		System.out.println(pv.getNumOfSitting());
-		pv.setNumOfSitting(20);
+//		pv.setNumOfSitting(20);
 	}
 }

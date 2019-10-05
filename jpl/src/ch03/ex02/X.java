@@ -19,8 +19,8 @@ public class X {
 
 	public void printVariable(String title) {
 		System.out.println(title);
-		System.out.println("xMask fullMask");
-		System.out.printf("0x%04x 0x%04x 0x%04x\n",xMask,fullMask);
+		System.out.println("xMask yMask fullMask");
+		System.out.printf("0x%04x 0x%04x 0x%04x\n",xMask,0,fullMask);
 	}
 
 }
