@@ -1,5 +1,6 @@
 package ch03.ex07;
 
+// 3.7
 // ColorAttrに対してequalsとhashCodeをオーバーライドしなさい。
 
 class ColorAttr extends Attr{

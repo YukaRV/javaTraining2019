@@ -1,5 +1,6 @@
 package ch03.ex06;
 
+// 3.6
 // Vehicleを変更して、コンストラクタでVehicleと関連付けされるEnergySourceオブジェクトの
 // 参照を持つようにしなさい。EnergySourceクラスは、abstractクラスでなければなりません。
 // なぜならば、GasTankオブジェクトの満タンの測定の方法は、Batteryオブジェクトとは異なるでしょう。

@@ -1,10 +1,4 @@
-package ch03.ex01;
-
-// 3.1
-// 第2章の練習問題のVehicleクラスを拡張してPassengerVehicleクラスを作成し、
-// 車が持っている座席数と現在座っている人数を返す機能を追加しなさい。
-// PassengerVehicleに新たなmainメソッドを定義して、
-// PassengerVehicleオブジェクトを数個生成して表示するようにしなさい。
+package ch04.ex01;
 
 class PassengerVehicle extends Vehicle{
 	private final int numOfSeat;
@@ -56,12 +50,8 @@ class PassengerVehicle extends Vehicle{
 		return true;
 	}
 	public static void main(String[] args) {
-		PassengerVehicle pv = new PassengerVehicle(4);
-		PassengerVehicle pv2 = new PassengerVehicle(6);
-		PassengerVehicle pv3 = new PassengerVehicle(20);
-		System.out.println(pv.getNumOfSitting());
-		pv.setNumOfSitting(4);
-		System.out.println(pv.getNumOfSitting());
-//		pv.setNumOfSitting(20);
+		PassengerVehicle pv = new PassengerVehicle(20);
+		pv.setNumOfSitting(5);
+		pv.start();
 	}
 }

@@ -1,11 +1,12 @@
-package ch03.ex08;
+package ch04.ex01;
 
-// 3.8
-// VehicleとPassengerVehicleをCloneable型にしなさい。
-// 複製に関して、4つの選択肢のどれを選択すべきでしょうか。
-// Object.cloneによる単純なコピーは、それらのクラスのcloneメソッドとしては正しいですか。
+// 3.1
+// 86頁の練習問題3.6の解答を、抽象クラスではなく、
+// EnergySourceのためのインタフェースを使用して書き直しなさい。
 
-class Vehicle implements Cloneable{
+// TODO: 書き換えてない
+
+class Vehicle {
 	private double speed,degree;
 	private String owner;
 	public static final String TURN_LEFT = "TURN_LEFT";
@@ -93,17 +94,5 @@ class Vehicle implements Cloneable{
 		txt += "\n";
 		txt += getSpeed()+" (m/s), "+getDegree() + " (degree)";
 		return txt;
-	}
-
-	@Override
-	public Vehicle clone(){
-		Vehicle cloneVehicle;
-		try {
-			cloneVehicle = (Vehicle)(super.clone());
-		} catch (CloneNotSupportedException e) {
-			throw new InternalError(e.toString());
-		}
-		cloneVehicle.setId();
-		return cloneVehicle;
 	}
 }

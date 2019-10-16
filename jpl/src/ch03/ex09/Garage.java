@@ -1,5 +1,6 @@
 package ch03.ex09;
 
+// 3.9
 // 何個かのVehicleオブジェクトを配列に保存できるGarageクラスを作成しなさい。
 // cloneをテストするGarage.mainメソッドを書きなさい。
 
