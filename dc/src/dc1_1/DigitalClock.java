@@ -12,8 +12,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.Calendar;
 
-import javax.swing.JOptionPane;
-
 /**
  * デジタル時計を描画する
  * @author p000527465
@@ -30,7 +28,7 @@ public class DigitalClock extends Frame implements Runnable,WindowListener,Compo
 	private String yyyymmdd;
 
 	public static void main(String[] args) {
-		JOptionPane.showMessageDialog(null, "TODO: ディレクトリ構成からsrcを消す\n　　　Jarを生成する");
+//		JOptionPane.showMessageDialog(null, "TODO: ディレクトリ構成からsrcを消す\n　　　Jarを生成する");
 		DigitalClock dc = new DigitalClock();
 		Thread thread = new Thread(dc);
 		thread.start();
