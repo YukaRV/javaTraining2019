@@ -4,8 +4,6 @@ package ch04.ex01;
 // 86頁の練習問題3.6の解答を、抽象クラスではなく、
 // EnergySourceのためのインタフェースを使用して書き直しなさい。
 
-// TODO: 書き換えてない
-
 class Vehicle {
 	private double speed,degree;
 	private String owner;

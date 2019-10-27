@@ -25,7 +25,7 @@ public class Vehicle {
 		if (d >= 0)
 			degree = d%maxDeg;
 		else
-			degree = maxDeg-(-d%maxDeg);// TODO test
+			degree = maxDeg-(-d%maxDeg);
 	}
 
 	public String getOwner() {

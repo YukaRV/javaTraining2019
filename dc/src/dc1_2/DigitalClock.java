@@ -234,9 +234,6 @@ public class DigitalClock extends Frame implements Runnable,ActionListener{
 	// ActionListener
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		System.out.println("e:"+e.getSource());
-//		setForeground(Color.CYAN);
-
 		// initialCol,initialSize等を定義しておく
 		// 設定を確定させた時点で、ダイアログのinitialを変更し、データを一通り返す
 		// 帰ってきた値をもとにGraphicsの中身を上書きする

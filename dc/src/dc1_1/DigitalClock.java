@@ -28,7 +28,6 @@ public class DigitalClock extends Frame implements Runnable,WindowListener,Compo
 	private String yyyymmdd;
 
 	public static void main(String[] args) {
-//		JOptionPane.showMessageDialog(null, "TODO: ディレクトリ構成からsrcを消す\n　　　Jarを生成する");
 		DigitalClock dc = new DigitalClock();
 		Thread thread = new Thread(dc);
 		thread.start();
@@ -70,7 +69,6 @@ public class DigitalClock extends Frame implements Runnable,WindowListener,Compo
 				// wait 1/10 second
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
-				// TODO 自動生成された catch ブロック
 				e.printStackTrace();
 			}
 		}
