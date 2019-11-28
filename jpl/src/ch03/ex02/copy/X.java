@@ -1,6 +1,6 @@
-package ch03.ex02;
+package ch03.ex02.copy;
 
-public class X {
+abstract public class X {
 	{
 		printVariable("初期値"); // 191115 追記: ここは手順3
 	}
@@ -17,10 +17,6 @@ public class X {
 		return (orig & fullMask);
 	}
 
-	public void printVariable(String title) {
-		System.out.println(title);
-		System.out.println("xMask yMask fullMask");
-		System.out.printf("0x%04x 0x%04x 0x%04x\n",xMask,0,fullMask);
-	}
+	abstract public void printVariable(String title);
 
 }
