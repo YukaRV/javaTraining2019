@@ -1,6 +1,7 @@
 package dc1_3;
 
 import java.awt.Button;
+import java.awt.CheckboxMenuItem;
 import java.awt.Choice;
 
 // 課題 1-2のデジタル時計を、次のように修正してください。
@@ -26,9 +27,10 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Label;
 import java.awt.Menu;
-import java.awt.MenuBar;
 import java.awt.MenuItem;
 import java.awt.Panel;
+import java.awt.Point;
+import java.awt.PopupMenu;
 import java.awt.Rectangle;
 import java.awt.TextField;
 import java.awt.Window;
@@ -36,11 +38,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.swing.JOptionPane;
 
@@ -49,7 +58,7 @@ import javax.swing.JOptionPane;
  * @author p000527465
  *
  */
-public class DigitalClock extends Frame implements Runnable,ActionListener{
+public class DigitalClock extends Window implements Runnable,ActionListener, MouseListener, MouseMotionListener{
 	Insets insets = getInsets();
 	final int DEFAULT_CANVAS_WIDTH = 350;
 	final int DEFAULT_CANVAS_HEIGHT = 200;
@@ -71,6 +80,8 @@ public class DigitalClock extends Frame implements Runnable,ActionListener{
 
 	private MonospacedClock clock;
 
+	PopupMenu popMenu;
+
 	public static void main(String[] args) {
 		DigitalClock dc = new DigitalClock();
 		Thread thread = new Thread(dc);
@@ -78,35 +89,117 @@ public class DigitalClock extends Frame implements Runnable,ActionListener{
     }
 
 	public DigitalClock() {
+		super(new Frame());
 		setVisible(true);
 		init();
 		DigitalClockListener dcListener = new DigitalClockListener();
 		addWindowListener(dcListener);
 		addComponentListener(dcListener);
 
-		insets = getInsets();
-		setSize(insets.left+canvasWidth+insets.right,
-				insets.top+canvasHeight+insets.bottom);
+		setSize(canvasWidth,canvasHeight);
+//		insets = getInsets();
+//		setSize(insets.left+canvasWidth+insets.right,
+//				insets.top+canvasHeight+insets.bottom);
 	}
 
+	MenuItem closeMenu;
 	/**
 	 * 初期値の設定
 	 */
 	protected void init() {
 		clock = new MonospacedClock();
-
-		MenuBar menuBar = new MenuBar();
-		Menu menu = new Menu("デザイン" );
-		MenuItem menuItem = new MenuItem("プロパティ");
-		menuItem.addActionListener(this);
-		menu.add(menuItem);
-		menuBar.add(menu);
-		setMenuBar(menuBar);
+		addMouseListener(this);
+		addMouseMotionListener(this);
 
 		// get now time
 		dateTime = LocalDateTime.now();
 		setProperty();
-		setResizable(false);
+//		setResizable(false);
+		Menu menu = getMenu();
+		popMenu = new PopupMenu();
+		popMenu.add(menu);
+		closeMenu = new MenuItem("閉じる");
+		closeMenu.addActionListener(this);
+		popMenu.add(closeMenu);
+		add(popMenu);
+
+	}
+
+	CheckboxMenuItem[] fontItems;
+	CheckboxMenuItem[] fontSizeItems;
+	CheckboxMenuItem[] txtColorItems;
+	CheckboxMenuItem[] bgColorItems;
+	HashMap<String, Color> colors = new HashMap<String, Color>(){{
+			put("BLACK",Color.BLACK);
+			put("RED",Color.RED);
+			put("GREEN",Color.GREEN);
+			put("BLUE",Color.BLUE);
+			put("CYAN",Color.CYAN);
+			put("MAGENTA",Color.MAGENTA);
+			put("YELLOW",Color.YELLOW);
+			put("WHITE",Color.WHITE);
+			put("DARK_GRAY", Color.DARK_GRAY);
+	}};
+	Menu getMenu() {
+		Menu menu = new Menu("デザイン" );
+
+		Menu fontMenu = new Menu("font");
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        // initial: buffer.getFont().getFamily();
+		String[] fontStrs = ge.getAvailableFontFamilyNames();
+		fontItems = new CheckboxMenuItem[fontStrs.length];
+		FontItemListener fl = new FontItemListener();
+        for (int i = 0;i < fontStrs.length;i++) {
+        	CheckboxMenuItem item = new CheckboxMenuItem(fontStrs[i]);
+        	if (fontStrs[i].equals(buffer.getFont().getFamily())) item.setState(true);
+        	item.addItemListener(fl);
+        	fontMenu.add(item);
+        	fontItems[i] = item;
+        }
+
+		Menu fontSizeMenu = new Menu("font size");
+		fontSizeItems = new CheckboxMenuItem[11];
+		FontSizeItemListener fsl = new FontSizeItemListener();
+		for (int i = 0;i < fontSizeItems.length;i++) {
+			int val = (i+1)*10;
+        	CheckboxMenuItem item = new CheckboxMenuItem(String.valueOf(val));
+        	if (val == buffer.getFont().getSize()) item.setState(true);
+        	item.addItemListener(fsl);
+        	fontSizeMenu.add(item);
+        	fontSizeItems[i] = item;
+        }
+
+		Menu txtColorMenu = new Menu("font color");
+		txtColorItems = new CheckboxMenuItem[colors.size()];
+		TextColorItemListener tcl = new TextColorItemListener();
+		int colorIdx = 0;
+		for(Iterator<String> iterator = colors.keySet().iterator(); iterator.hasNext();colorIdx++) {
+			String key = iterator.next();
+			CheckboxMenuItem item = new CheckboxMenuItem(key);
+			if (colors.get(key).equals(getForeground())) item.setState(true);
+			item.addItemListener(tcl);
+			txtColorMenu.add(item);
+			txtColorItems[colorIdx] = item;
+		}
+
+		Menu bgColorMenu = new Menu("background color");
+		bgColorItems = new CheckboxMenuItem[colors.size()];
+		BgColorItemListener bcl = new BgColorItemListener();
+		colorIdx = 0;
+		for(Iterator<String> iterator = colors.keySet().iterator(); iterator.hasNext();colorIdx++) {
+			String key = iterator.next();
+			CheckboxMenuItem item = new CheckboxMenuItem(key);
+		    if (colors.get(key).equals(getBackground())) item.setState(true);
+			item.addItemListener(bcl);
+			bgColorMenu.add(item);
+			bgColorItems[colorIdx] = item;
+		}
+		menu.add(fontMenu);
+		menu.add(fontSizeMenu);
+		menu.add(txtColorMenu);
+		menu.add(bgColorMenu);
+//		menu.add(menuItem);
+		return menu;
 	}
 
 	/**
@@ -143,7 +236,7 @@ public class DigitalClock extends Frame implements Runnable,ActionListener{
 		int cw = insets.left+canvasWidth/2,ch = insets.top+(canvasHeight/2);
 		drawStringCenter(buffer,hhmmss,   cw, ch-fontSize/2);
 		drawStringCenter(buffer,yyyymmdd, cw, ch+fontSize/2);//ascent使った方がいいの？
-		clock.drawClockCenter(buffer,  cw, ch);
+//		clock.drawClockCenter(buffer,  cw, ch);
 
 		g.drawImage(back, 0, 0, this);
 	}
@@ -220,6 +313,10 @@ public class DigitalClock extends Frame implements Runnable,ActionListener{
 	 * @param bgColor 背景色
 	 */
 	public void setProperty(String font,int fontSize,Color txtColor,Color bgColor) {
+		if (font == null) font = canvasFont.getFontName();
+		if (fontSize == -1) fontSize = canvasFont.getSize();
+		if (txtColor == null) txtColor = getForeground();
+		if (bgColor == null) bgColor = getBackground();
 		// 1,2. フォント、サイズの指定
 		canvasFont = new Font(font,Font.BOLD,fontSize);
 		setSize(insets.left+fontSize*RATIO_WIDTH+insets.right,
@@ -236,11 +333,52 @@ public class DigitalClock extends Frame implements Runnable,ActionListener{
 	// ActionListener
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource().equals(closeMenu)) {
+			System.exit(0);
+		}
 		// initialCol,initialSize等を定義しておく
 		// 設定を確定させた時点で、ダイアログのinitialを変更し、データを一通り返す
 		// 帰ってきた値をもとにGraphicsの中身を上書きする
 		SettingDialog dlg = new SettingDialog(this,"プロパティ",ModalityType.DOCUMENT_MODAL);
 		dlg.setVisible(true);//windowClosingいれてね
+
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+	}
+	Point clickedPoint = new Point();
+	@Override
+	public void mousePressed(MouseEvent e) {
+		switch (e.getButton()) {
+			case MouseEvent.BUTTON1:
+				clickedPoint.setLocation(e.getX(), e.getY());
+				break;
+			case MouseEvent.BUTTON3:
+				popMenu.show(this,e.getX(),e.getY());
+				break;
+		}
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+	}
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		Point p = e.getLocationOnScreen();
+		setLocation(new Point(p.x-clickedPoint.x, p.y-clickedPoint.y));
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
 
 	}
 
@@ -485,6 +623,61 @@ public class DigitalClock extends Frame implements Runnable,ActionListener{
 		@Override
 		public void componentHidden(ComponentEvent e) {}
 
+	}
+
+
+	private class FontItemListener implements ItemListener {
+		@Override
+		public void itemStateChanged(ItemEvent e) {
+			CheckboxMenuItem ci = (CheckboxMenuItem)e.getSource();
+			for (int i = 0;i < fontItems.length;i++) {
+				CheckboxMenuItem fi = fontItems[i];
+				if (ci.equals(fi)) {
+					setProperty(fi.getLabel(), -1, null, null);
+				}
+				else if (fi.getState()) fi.setState(false);
+			}
+		}
+	}
+	private class FontSizeItemListener implements ItemListener {
+		@Override
+		public void itemStateChanged(ItemEvent e) {
+			CheckboxMenuItem ci = (CheckboxMenuItem)e.getSource();
+			for (int i = 0;i < fontSizeItems.length;i++) {
+				CheckboxMenuItem fi = fontSizeItems[i];
+				if (ci.equals(fi)) {
+					setProperty(null, Integer.parseInt(fi.getLabel()), null, null);
+				}
+				else if (fi.getState()) fi.setState(false);
+			}
+		}
+	}
+
+	private class TextColorItemListener implements ItemListener {
+		@Override
+		public void itemStateChanged(ItemEvent e) {
+			CheckboxMenuItem ci = (CheckboxMenuItem)e.getSource();
+			for (int i = 0;i < txtColorItems.length;i++) {
+				CheckboxMenuItem ti = txtColorItems[i];
+				if (ci.equals(ti)) {
+					setProperty(null, -1, colors.get(ti.getLabel()), null);
+				}
+				else if (ti.getState()) ti.setState(false);
+			}
+		}
+	}
+	private class BgColorItemListener implements ItemListener {
+		@Override
+		public void itemStateChanged(ItemEvent e) {
+			CheckboxMenuItem ci = (CheckboxMenuItem)e.getSource();
+			for (int i = 0;i < bgColorItems.length;i++) {
+				CheckboxMenuItem bi = bgColorItems[i];
+				if (ci.equals(bi)) {
+					setProperty(null, -1, null, colors.get(bi.getLabel()));
+				}
+				else if (bi.getState()) bi.setState(false);
+			}
+		}
 	}
 
 }
