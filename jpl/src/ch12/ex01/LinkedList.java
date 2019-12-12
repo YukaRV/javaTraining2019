@@ -86,7 +86,8 @@ public class LinkedList<E> implements Cloneable{
 	public LinkedList<E> clone() {
 		LinkedList<E> list =  new LinkedList<E>();
 		LinkedList<E> iter = this;
-		for (int i = 0;i < list.size();i++) {
+		int size = iter.size();
+		for (int i = 0;i < size;i++) {
 			list.add(iter.curObj);
 			iter = iter.next();
 		}
