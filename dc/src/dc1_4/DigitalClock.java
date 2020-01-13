@@ -53,10 +53,10 @@ import javax.swing.JOptionPane;
 //してください。
 //• レイアウトマネージャは、GridBagLayout を使用する。
 //• プロパティダイアログは、「属性名」との「値の選択リスト」が縦に並ぶようにする。
-//		フォント		フォントの値の選択リスト
-//		フォントサイズ	サイズの値の選択リスト
-//		文字色			色の値の選択リスト
-//		背景色			色の値の選択リスト
+//		　　　フォント　フォントの値の選択リスト
+//		フォントサイズ　サイズの値の選択リスト
+//		　　　　文字色　色の値の選択リスト
+//		　　　　背景色　色の値の選択リスト
 //この場合「属性名」のラベルは右寄せして、「値の選択リスト」メニューは左寄せにする。
 //• ダイアログの下には、「OK」「キャンセル」のボタンをダイアログの右下に寄せて表示し、そ
 //れぞれのボタンを実装する。キャンセルされた場合には、正しく、元の値に戻るようにする。
@@ -87,7 +87,7 @@ public class DigitalClock extends Frame implements Runnable,ActionListener{
 	/**
 	 * 時間を保持
 	 */
-	private LocalDateTime dateTime;
+	private LocalDateTime dateTime = LocalDateTime.now();
 	private String hhmmss;
 	private String yyyymmdd;
 
