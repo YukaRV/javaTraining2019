@@ -23,6 +23,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -33,6 +34,7 @@ import java.awt.Menu;
 import java.awt.MenuBar;
 import java.awt.MenuItem;
 import java.awt.Panel;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.TextField;
 import java.awt.Window;
@@ -45,6 +47,8 @@ import java.awt.event.TextListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.time.LocalDateTime;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import javax.swing.JOptionPane;
 
@@ -71,13 +75,17 @@ import javax.swing.JOptionPane;
  * @author p000527465
  *
  */
-public class DigitalClock extends Frame implements Runnable,ActionListener{
+public class DigitalClock extends Frame implements Runnable, ActionListener{
 	Insets insets = getInsets();
 	final int DEFAULT_CANVAS_WIDTH = 350;
 	final int DEFAULT_CANVAS_HEIGHT = 200;
 	final int DEFAULT_FONT_SIZE = 50;
 	final int RATIO_WIDTH = DEFAULT_CANVAS_WIDTH/DEFAULT_FONT_SIZE;
 	final int RATIO_HEIGHT = DEFAULT_CANVAS_HEIGHT/DEFAULT_FONT_SIZE;
+
+	final String DEFAULT_FONT = Font.MONOSPACED;
+	final Color DEFAULT_TXTCOLOR = Color.DARK_GRAY;
+	final Color DEFAULT_BGCOLOR = Color.WHITE;
 
 	int canvasWidth = DEFAULT_CANVAS_WIDTH,
 		canvasHeight = DEFAULT_CANVAS_HEIGHT;
@@ -90,6 +98,8 @@ public class DigitalClock extends Frame implements Runnable,ActionListener{
 	private LocalDateTime dateTime = LocalDateTime.now();
 	private String hhmmss;
 	private String yyyymmdd;
+	// 設定の保存
+	Preferences prefs;
 
 	public static void main(String[] args) {
 		DigitalClock dc = new DigitalClock();
@@ -123,7 +133,19 @@ public class DigitalClock extends Frame implements Runnable,ActionListener{
 
 		// get now time
 		dateTime = LocalDateTime.now();
-		setProperty();
+
+		// set property
+		prefs = Preferences.userNodeForPackage(this.getClass());
+		try {
+			if (prefs.keys().length > 0)
+				setPrefs();
+			else
+				setProperty();
+		} catch (BackingStoreException e) {
+			e.printStackTrace();
+		}
+//		prefs.put("testKey","testValue");
+
 		setResizable(false);
 	}
 
@@ -204,6 +226,21 @@ public class DigitalClock extends Frame implements Runnable,ActionListener{
 		return String.format(format, num);
 	}
 
+	public final void setPrefs() {
+		int x = prefs.getInt("locationx", 0);
+		int y = prefs.getInt("locationy", 0);
+		setLocation(x, y);
+		String font = prefs.get("font", DEFAULT_FONT);
+		int fontSize = prefs.getInt("fontsize", DEFAULT_FONT_SIZE);
+		int txtColorRGB = prefs.getInt("color", DEFAULT_TXTCOLOR.getRGB());
+		int bgColorRGB = prefs.getInt("bgcolor", DEFAULT_BGCOLOR.getRGB());
+		System.out.println(font);
+		System.out.println(fontSize);
+		System.out.println(new Color(txtColorRGB));
+		System.out.println(new Color(bgColorRGB));
+		setProperty(font, fontSize, new Color(txtColorRGB), new Color(bgColorRGB));
+	}
+
 	/**
 	 * x,yが中心となるようdrawStringする
 	 * @param g 描画に使うGraphics
@@ -225,7 +262,8 @@ public class DigitalClock extends Frame implements Runnable,ActionListener{
 	 * フォント、フォントサイズ、文字色、背景色を初期設定にする
 	 */
 	public void setProperty() {
-		setProperty(Font.MONOSPACED,DEFAULT_FONT_SIZE,Color.DARK_GRAY,Color.WHITE);
+		setProperty(DEFAULT_FONT, DEFAULT_FONT_SIZE,
+					DEFAULT_TXTCOLOR, DEFAULT_BGCOLOR);
 	}
 
 	/**
@@ -236,6 +274,11 @@ public class DigitalClock extends Frame implements Runnable,ActionListener{
 	 * @param bgColor 背景色
 	 */
 	public void setProperty(String font,int fontSize,Color txtColor,Color bgColor) {
+		if (font == "") font = DEFAULT_FONT;
+		if (fontSize == -1) fontSize = DEFAULT_FONT_SIZE;
+		if (txtColor == null) txtColor = DEFAULT_TXTCOLOR;
+		if (bgColor == null) bgColor = DEFAULT_BGCOLOR;
+
 		// 1,2. フォント、サイズの指定
 		canvasFont = new Font(font,Font.BOLD,fontSize);
 		setSize(insets.left+fontSize*RATIO_WIDTH+insets.right,
@@ -271,6 +314,7 @@ public class DigitalClock extends Frame implements Runnable,ActionListener{
 		private ColorTextFields colorTF;
 		private ColorTextFields bgColorTF;
 		private GridBagLayout gbl;
+		private Panel panel;
 		private int width = 400;
 		private int height = 200;
 
@@ -282,28 +326,63 @@ public class DigitalClock extends Frame implements Runnable,ActionListener{
 		}
 
 		protected void init() {
+			panel = new Panel();
 			gbl = new GridBagLayout();
-			setLayout(gbl);
+			panel.setLayout(gbl);
+			GridBagConstraints gbc = new GridBagConstraints();
 
-			addComponent(new Label("font"),0,0,1,1,GridBagConstraints.WEST);
-	        String[] fontStrs = {Font.MONOSPACED,Font.SANS_SERIF,Font.SERIF,Font.DIALOG,Font.DIALOG_INPUT};
+			Label fontLabel = new Label("font");
+			setGBC(gbc,0,0,1,1,GridBagConstraints.EAST);
+			gbl.setConstraints(fontLabel, gbc);
+			panel.add(fontLabel);
+//			addComponent(new Label("font"),0,0,1,1,GridBagConstraints.EAST);
+	        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+	        // initial: buffer.getFont().getFamily();
+			String[] fontStrs = ge.getAvailableFontFamilyNames();
+//	        String[] fontStrs = {Font.MONOSPACED,Font.SANS_SERIF,Font.SERIF,Font.DIALOG,Font.DIALOG_INPUT};
 	        fontChoice = getChoice(fontStrs, buffer.getFont().getFamily());
-			addComponent(fontChoice,0,1,1,1,GridBagConstraints.EAST);
+			setGBC(gbc, 0,1,1,1,GridBagConstraints.WEST);
+			gbl.setConstraints(fontChoice, gbc);
+			panel.add(fontChoice);
+//	        addComponent(fontChoice,0,1,1,1,GridBagConstraints.WEST);
 
-			addComponent(new Label("font size"),1,0,1,1,GridBagConstraints.WEST);
+			Label fontSizeLabel = new Label("font size");
+			setGBC(gbc,1,0,1,1,GridBagConstraints.EAST);
+			gbl.setConstraints(fontSizeLabel, gbc);
+			panel.add(fontSizeLabel);
+//			addComponent(new Label("font size"),1,0,1,1,GridBagConstraints.EAST);
 			int minSize = 8;int maxSize = 100;
 	        String[] fontSizeStrs = new String[maxSize-minSize];
 	        for (int i = 0;i < fontSizeStrs.length;i++) fontSizeStrs[i] = String.valueOf(i+minSize+1);
 	        fontSizeChoice = getChoice(fontSizeStrs, String.valueOf(buffer.getFont().getSize()));
-			addComponent(fontSizeChoice,1,1,1,1,GridBagConstraints.EAST);
+			setGBC(gbc,1,1,1,1,GridBagConstraints.WEST);
+			gbl.setConstraints(fontSizeChoice, gbc);
+			panel.add(fontSizeChoice);
+//			addComponent(fontSizeChoice,1,1,1,1,GridBagConstraints.WEST);
 
-			addComponent(new Label("font color"),2,0,1,1,GridBagConstraints.WEST);
+			Label fontColorLabel = new Label("font color");
+			setGBC(gbc,2,0,1,1,GridBagConstraints.EAST);
+			gbl.setConstraints(fontColorLabel, gbc);
+			panel.add(fontColorLabel);
+//			addComponent(new Label("font color"),2,0,1,1,GridBagConstraints.EAST);
 			colorTF = getColorTextFieldsFromColor(getForeground());
-			addComponent(getColorTextFieldsPanel(colorTF),2,1,1,1,GridBagConstraints.EAST);
+			Panel colorPanel = getColorTextFieldsPanel(colorTF);
+			setGBC(gbc,2,1,1,1,GridBagConstraints.WEST);
+			gbl.setConstraints(colorPanel, gbc);
+			panel.add(colorPanel);
+//			addComponent(getColorTextFieldsPanel(colorTF),2,1,1,1,GridBagConstraints.WEST);
 
-			addComponent(new Label("background color"),3,0,1,1,GridBagConstraints.WEST);
+			Label bgcolorLabel = new Label("background color");
+			setGBC(gbc,3,0,1,1,GridBagConstraints.EAST);
+			gbl.setConstraints(bgcolorLabel, gbc);
+			panel.add(bgcolorLabel);
+//			addComponent(bgcolorLabel,3,0,1,1,GridBagConstraints.EAST);
 			bgColorTF = getColorTextFieldsFromColor(getBackground());
-			addComponent(getColorTextFieldsPanel(bgColorTF),3,1,1,1,GridBagConstraints.EAST);
+			Panel bgColorPanel = getColorTextFieldsPanel(bgColorTF);
+			setGBC(gbc,3,1,1,1,GridBagConstraints.WEST);
+			gbl.setConstraints(bgColorPanel, gbc);
+			panel.add(bgColorPanel);
+//			addComponent(getColorTextFieldsPanel(bgColorTF),3,1,1,1,GridBagConstraints.WEST);
 
 			Panel p = new Panel();
 			Button okButton = new Button("OK");
@@ -312,7 +391,19 @@ public class DigitalClock extends Frame implements Runnable,ActionListener{
 			Button cancelButton = new Button("キャンセル");
 			cancelButton.addActionListener(this);
 			p.add(cancelButton);
-			addComponent(p,4,0,1,2);
+			setGBC(gbc,4,0,1,2,GridBagConstraints.EAST);
+			gbl.setConstraints(p, gbc);
+			panel.add(p);
+			addComponent(panel, 0, 0, getWidth(), getHeight());
+//			addComponent(p,4,0,1,2);
+		}
+
+		protected void setGBC(GridBagConstraints gbc, int gridy, int gridx, int gridheight, int gridwidth, int anchor) {
+			gbc.gridx = gridx;
+			gbc.gridy = gridy;
+			gbc.gridwidth = gridwidth;
+			gbc.gridheight = gridheight;
+			gbc.anchor = anchor;
 		}
 
 		protected Choice getChoice(String[] array, String selected) {
@@ -355,10 +446,17 @@ public class DigitalClock extends Frame implements Runnable,ActionListener{
 			Color bgColor = new Color(Integer.parseInt(bgColorTF.getRedTextField().getText()),
 								Integer.parseInt(bgColorTF.getGreenTextField().getText()),
 								Integer.parseInt(bgColorTF.getBlueTextField().getText()));
-			setProperty(fontChoice.getSelectedItem(),
-						Integer.parseInt(fontSizeChoice.getSelectedItem()),
+			String font = fontChoice.getSelectedItem();
+			String fontSizeStr = fontSizeChoice.getSelectedItem();
+			String colorStr = String.valueOf(color.getRGB());
+			String bgcolorStr = String.valueOf(bgColor.getRGB());
+			setProperty(font, Integer.parseInt(fontSizeStr),
 						color,
 						bgColor);
+			prefs.put("font", font);
+			prefs.put("fontsize", fontSizeStr);
+			prefs.put("color", colorStr);
+			prefs.put("bgcolor", bgcolorStr);
 		}
 
 		public void addComponent(Component c, int row, int col, int h, int w) {
@@ -493,7 +591,11 @@ public class DigitalClock extends Frame implements Runnable,ActionListener{
 		public void componentResized(ComponentEvent e) {
 		}
 		@Override
-		public void componentMoved(ComponentEvent e) {}
+		public void componentMoved(ComponentEvent e) {
+			Point point = getLocationOnScreen();
+			prefs.put("locationx", String.valueOf(point.x));
+			prefs.put("locationy", String.valueOf(point.y));
+		}
 		@Override
 		public void componentShown(ComponentEvent e) {}
 		@Override

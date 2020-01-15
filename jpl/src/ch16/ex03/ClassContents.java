@@ -6,6 +6,7 @@ package ch16.ex03;
 // 同じものを2度表示しないようにしなさい。
 
 import java.lang.reflect.Member;
+import java.lang.reflect.Modifier;
 
 public class ClassContents {
 	public static void main(String[] args) {
@@ -44,12 +45,6 @@ public class ClassContents {
 	}
 
 	static boolean isPublic(Member mem) {
-		String memStr = mem.toString();
-		int i = memStr.lastIndexOf(" ");
-		String modifier = memStr.substring(0,i);
-		if (modifier.contains("public")) {
-			return true;
-		}
-		return false;
+		return ((mem.getModifiers() & Modifier.PUBLIC) != 0);
 	}
 }

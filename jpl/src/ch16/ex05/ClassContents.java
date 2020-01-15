@@ -1,12 +1,11 @@
 package ch16.ex05;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-
 // 16.5
 // 個々のメンバーに対して得られるアノテーション情報を含むようにClassContentsを拡張しなさい。
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 

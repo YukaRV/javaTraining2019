@@ -4,6 +4,8 @@
  */
 package ch14.ex10;
 
+import java.util.LinkedList;
+
 // TODO 追加課題14.10
 // 第14章の追加問題として練習問題10を解いてもらいます。練習問題は、以下のリポジトリの
 // ThreadPool.java と ThreadPoolTest.java の二つのソースファイルです。
@@ -34,50 +36,76 @@ package ch14.ex10;
  *  @author Yoshiki Shibata
  */
 public class ThreadPool {
-    /**
-     * Constructs ThreadPool.
-     *
-     * @param queueSize the max size of queue
-     * @param numberOfThreads the number of threads in this pool.
-     *
-     * @throws IllegalArgumentException if either queueSize or numberOfThreads
-     *         is less than 1
-     */
-    public ThreadPool(int queueSize, int numberOfThreads) {
-        throw new AssertionError("Not Implemented Yet");
-    }
+	int queueSize;
+	LinkedList<Runnable> queue;
+	int numberOfThreads;
+	Thread[] thread;
+	/**
+	 * Constructs ThreadPool.
+	 *
+	 * @param queueSize the max size of queue
+	 * @param numberOfThreads the number of threads in this pool.
+	 *
+	 * @throws IllegalArgumentException if either queueSize or numberOfThreads
+	 *         is less than 1
+	 */
+	public ThreadPool(int queueSize, int numberOfThreads) {
+		if (queueSize <= 0)
+			throw new IllegalArgumentException("queue size: "+queueSize);
+		if (numberOfThreads <= 0)
+			throw new IllegalArgumentException("number of threads: "+numberOfThreads);
+		this.queueSize = queueSize;
+		this.numberOfThreads = numberOfThreads;
+		thread = new Thread[numberOfThreads];
+		for (int i = 0;i < numberOfThreads;i++) {
+			thread[i] = new Thread();
+		}
+	}
 
-    /**
-     * Starts threads.
-     *
-     * @throws IllegalStateException if threads has been already started.
-     */
-    public void start() {
-        throw new AssertionError("Not Implemented Yet");
-    }
+	/**
+	 * Starts threads.
+	 *
+	 * @throws IllegalStateException if threads has been already started.
+	 */
+	public void start() {
+		if (thread[0].isAlive())
+			throw new IllegalStateException("threads has been already started.");
 
-    /**
-     * Stop all threads gracefully and wait for their terminations.
+		for (int i = 0;i < numberOfThreads;i++) {
+			thread[i].start();
+		}
+	}
+
+	/**
+	 * Stop all threads gracefully and wait for their terminations.
 	 * All requests dispatched before this method is invoked must complete
 	 * and this method also will wait for their completion.
-     *
-     * @throws IllegalStateException if threads has not been started.
-     */
-    public void stop() {
-        throw new AssertionError("Not Implemented Yet");
-    }
+	 *
+	 * @throws IllegalStateException if threads has not been started.
+	 */
+	public void stop() {
+		if (!thread[0].isAlive())
+			throw new IllegalStateException("threads has not been started.");
+		for (int i = 0;i < numberOfThreads;i++) {
+			thread[i].interrupt();
+		}
+	}
 
-    /**
-     * Executes the specified Runnable object, using a thread in the pool.
-     * run() method will be invoked in the thread. If the queue is full, then
-     * this method invocation will be blocked until the queue is not full.
-     *
-     * @param runnable Runnable object whose run() method will be invoked.
-     *
-     * @throws NullPointerException if runnable is null.
-     * @throws IllegalStateException if this pool has not been started yet.
-     */
-    public void dispatch(Runnable runnable) {
-        throw new AssertionError("Not Implemented Yet");
-    }
+	/**
+	 * Executes the specified Runnable object, using a thread in the pool.
+	 * run() method will be invoked in the thread. If the queue is full, then
+	 * this method invocation will be blocked until the queue is not full.
+	 *
+	 * @param runnable Runnable object whose run() method will be invoked.
+	 *
+	 * @throws NullPointerException if runnable is null.
+	 * @throws IllegalStateException if this pool has not been started yet.
+	 */
+	public void dispatch(Runnable runnable) {
+		if (!thread[0].isAlive())
+			throw new IllegalStateException("threads has not been started.");
+		for (int i = 0;i < numberOfThreads;i++) {
+
+		}
+	}
 }

@@ -17,7 +17,7 @@ public class PlayerLoader extends ClassLoader{
 	protected byte[] bytesForClass(String name) throws IOException, ClassNotFoundException {
 		FileInputStream in = null;
 		try {
-			in = streamFor(name + ".class");
+//			in = streamFor(name + ".class");
 			int length = in.available();	// バイト数を得る
 			if (length == 0)
 				throw new ClassNotFoundException(name);
