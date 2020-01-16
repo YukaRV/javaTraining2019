@@ -8,6 +8,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 public class ClassContents {
 	public static void main(String[] args) {
@@ -50,13 +51,7 @@ public class ClassContents {
 	}
 
 	static boolean isPublic(Member mem) {
-		String memStr = mem.toString();
-		int i = memStr.lastIndexOf(" ");
-		String modifier = memStr.substring(0,i);
-		if (modifier.contains("public")) {
-			return true;
-		}
-		return false;
+		return ((mem.getModifiers() & Modifier.PUBLIC) != 0);
 	}
 
 	static void printMemberAnnotations(Member mem, String indentation) {

@@ -1,10 +1,9 @@
-package ch16.ex11;
+package ch16.ex12;
 
 import java.util.Arrays;
 
-// 16.11
-// GameとPlayerを発展させて三目並べのような簡単なゲームを実装しなさい。
-// いくつかのPlayerの自走を、それぞれ何回か実行してスコアーを取りなさい。
+// TODO 16.12
+// 練習問題16.11の結果を修正して、findResourceとfindResourcesを実装することで、プレーヤーの戦略が付属するリソースを使用できるようにしなさい。
 
 public class Game {
 	public static void main(String[] args) {

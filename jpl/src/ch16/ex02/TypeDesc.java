@@ -10,15 +10,13 @@ import java.lang.reflect.TypeVariable;
 
 public class TypeDesc {
 	public static void main(String[] args) {
-		String[] args2 = {"ch16.ex02.SingleLinkQueue"};
-		args = args2;
+//		String[] args2 = {"ch16.ex02.SingleLinkQueue$Cell"};
+//		args = args2;
 		TypeDesc desc = new TypeDesc();
 		for (String name: args) {
 			try {
 				Class<?> startClass = Class.forName(name);
-				SingleLinkQueue testParentClass = new SingleLinkQueue();
-				SingleLinkQueue.Cell testMemberClass = testParentClass.new Cell();
-				desc.printType(testMemberClass.getClass(), 0, basic);// Class.forNameでCellを通すとエラーになるため
+				desc.printType(startClass, 0, basic);
 			} catch (ClassNotFoundException e) {
 				System.err.println(e);	// report the error
 			}

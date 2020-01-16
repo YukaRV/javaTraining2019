@@ -8,8 +8,8 @@ import java.lang.annotation.Annotation;
 
 public class RuntimeAnnotation {
 	public static void main(String[] args) {
-		String[] args2 = {"ch16.ex04.ReflectAnnotationExample"};
-		args = args2;
+//		String[] args2 = {"ch16.ex04.ReflectAnnotationExample"};
+//		args = args2;
 		Class<?> reflectAnnotation = ReflectAnnotationExample.AnnotationClassTest.class;
 		printAnnotations(reflectAnnotation.getAnnotations());
 	}

@@ -1,4 +1,4 @@
-package ch16.ex11;
+package ch16.ex12;
 
 public abstract class Player {
 	static int number = 0;
