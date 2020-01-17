@@ -9,7 +9,8 @@ public class TestPlayer extends Player{
 	}
 
 	@Override
-	int strategy(Game game) {
+	int strategy() {
+		Game game = getGame();
 		int[][] board = game.getBoard();
 		for (int r = 0;r < board.length;r++) {
 			for (int c = 0;c < board[r].length;c++) {

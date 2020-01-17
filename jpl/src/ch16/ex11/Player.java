@@ -3,6 +3,7 @@ package ch16.ex11;
 public abstract class Player {
 	static int number = 0;
 	String name = "no name";
+	private Game game;
 	public Player() {
 		this("Player-"+number);
 	}
@@ -14,8 +15,9 @@ public abstract class Player {
 		return name;
 	}
 	public final void play(Game game) {
+		this.game = game;
 		while(true) {
-		int selectPos = strategy(game);
+		int selectPos = strategy();
 		if (selectPos == -1) {
 			System.out.println("pass");
 			break;
@@ -28,5 +30,8 @@ public abstract class Player {
 		System.out.println("cannot put");
 		}
 	}
-	abstract int strategy(Game game);
+	protected final Game getGame() {
+		return game.clone();
+	}
+	abstract int strategy();
 }

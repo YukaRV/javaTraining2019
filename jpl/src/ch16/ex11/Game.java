@@ -188,4 +188,23 @@ public class Game {
 		}
 		return (diag[0]||diag[1]);
 	}
+	public Game clone() {
+		Game game = new Game();
+		int num_of_player = this.playerOrder.length;
+		int[] playerOrder = new int[num_of_player];
+		for (int i = 0;i < num_of_player;i++)
+			playerOrder[i] = this.playerOrder[i];
+
+		int boardLength = this.boardLength;
+		int[][] board = new int[boardLength][boardLength];
+		for (int i = 0;i < num_of_player;i++)
+			for (int j = 0;j < num_of_player;j++)
+				board[i][j] = this.board[i][j];
+
+		game.curPlayer = curPlayer;
+		game.winner = winner;
+		game.playerOrder = playerOrder;
+		game.board = board;
+		return this;
+	}
 }
