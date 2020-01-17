@@ -4,7 +4,7 @@
  */
 package ch14.ex10;
 
-import java.util.LinkedList;
+import java.util.concurrent.ArrayBlockingQueue;
 
 // TODO 追加課題14.10
 // 第14章の追加問題として練習問題10を解いてもらいます。練習問題は、以下のリポジトリの
@@ -37,7 +37,7 @@ import java.util.LinkedList;
  */
 public class ThreadPool {
 	int queueSize;
-	LinkedList<Runnable> queue;
+	ArrayBlockingQueue<Runnable> queue;
 	int numberOfThreads;
 	Thread[] thread;
 	/**
@@ -55,6 +55,7 @@ public class ThreadPool {
 		if (numberOfThreads <= 0)
 			throw new IllegalArgumentException("number of threads: "+numberOfThreads);
 		this.queueSize = queueSize;
+		queue = new ArrayBlockingQueue<>(queueSize);
 		this.numberOfThreads = numberOfThreads;
 		thread = new Thread[numberOfThreads];
 		for (int i = 0;i < numberOfThreads;i++) {
@@ -86,6 +87,8 @@ public class ThreadPool {
 	public void stop() {
 		if (!thread[0].isAlive())
 			throw new IllegalStateException("threads has not been started.");
+		// TODO interrupt使ったらエラー出すテストになっているらしいのでうまく避けるか別の方法考えるか
+		// jnterrupt使わないでねって最初言ってたから使わないのが正攻法？
 		for (int i = 0;i < numberOfThreads;i++) {
 			thread[i].interrupt();
 		}
@@ -104,8 +107,32 @@ public class ThreadPool {
 	public void dispatch(Runnable runnable) {
 		if (!thread[0].isAlive())
 			throw new IllegalStateException("threads has not been started.");
-		for (int i = 0;i < numberOfThreads;i++) {
+		queue.add(runnable);
+		notifyAll();
+		// 柴田さん｢CPU使わないコードにしてください｣
+	}
 
+	class ThreadWrapper extends Thread{
+		ThreadPool monitor;
+		public ThreadWrapper(ThreadPool monitor) {
+			this.monitor = monitor;
+		}
+		public void run() {
+			Runnable runnable = null;
+			while(true) {
+				try {
+					monitor.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				synchronized (monitor) {
+					if (queue.size() > 0)
+						runnable = queue.remove();
+				}
+				if (runnable != null)
+					runnable.run();
+				runnable = null;
+			}
 		}
 	}
 }
