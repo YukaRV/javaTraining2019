@@ -5,18 +5,18 @@ package ch11.ex01;
 
 
 public class LinkedList<E> implements Cloneable{
-	private Object curObj;
+	private E curObj;
 	private LinkedList<E> nextNode;
 
 	public LinkedList() {
 		this(null);
 	}
-	public LinkedList(Object obj) {
+	public LinkedList(E obj) {
 		curObj = obj;
 		nextNode = null;
 	}
 
-	public final void add(Object obj) {
+	public final void add(E obj) {
 		add(new LinkedList<E>(obj));
 	}
 	public final void add(LinkedList<E> list) {
@@ -30,11 +30,11 @@ public class LinkedList<E> implements Cloneable{
 		iter.nextNode = list;
 	}
 
-	public final void set(Object obj) {
+	public final void set(E obj) {
 		curObj = obj;
 	}
 
-	public final Object get() {
+	public final E get() {
 		return curObj;
 	}
 	public final LinkedList<E> next() {
