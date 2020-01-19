@@ -39,7 +39,7 @@ public class ThreadPool {
 	int queueSize;
 	ArrayBlockingQueue<Runnable> queue;
 	int numberOfThreads;
-	Thread[] thread;
+	ThreadWrapper[] threads;
 	/**
 	 * Constructs ThreadPool.
 	 *
@@ -57,9 +57,9 @@ public class ThreadPool {
 		this.queueSize = queueSize;
 		queue = new ArrayBlockingQueue<>(queueSize);
 		this.numberOfThreads = numberOfThreads;
-		thread = new Thread[numberOfThreads];
+		threads = new ThreadWrapper[numberOfThreads];
 		for (int i = 0;i < numberOfThreads;i++) {
-			thread[i] = new Thread();
+			threads[i] = new ThreadWrapper(this);
 		}
 	}
 
@@ -69,11 +69,12 @@ public class ThreadPool {
 	 * @throws IllegalStateException if threads has been already started.
 	 */
 	public void start() {
-		if (thread[0].isAlive())
-			throw new IllegalStateException("threads has been already started.");
-
 		for (int i = 0;i < numberOfThreads;i++) {
-			thread[i].start();
+			synchronized (threads[i]) {
+				if (threads[i].isAlive())
+					throw new IllegalStateException("threads has been already started.");
+				threads[i].start();
+			}
 		}
 	}
 
@@ -85,12 +86,16 @@ public class ThreadPool {
 	 * @throws IllegalStateException if threads has not been started.
 	 */
 	public void stop() {
-		if (!thread[0].isAlive())
-			throw new IllegalStateException("threads has not been started.");
-		// TODO interrupt使ったらエラー出すテストになっているらしいのでうまく避けるか別の方法考えるか
-		// jnterrupt使わないでねって最初言ってたから使わないのが正攻法？
 		for (int i = 0;i < numberOfThreads;i++) {
-			thread[i].interrupt();
+			if (!threads[i].isAlive())
+				throw new IllegalStateException("threads has not been started.");
+			// TODO interrupt使ったらエラー出すテストになっているらしいのでうまく避けるか別の方法考えるか
+			// nterrupt使わないでねって最初言ってたから使わないのが正攻法？
+			ThreadWrapper thread = threads[i];
+			thread.setContinue(false);
+			synchronized (thread) {
+				thread.notifyAll();
+			}
 		}
 	}
 
@@ -105,34 +110,49 @@ public class ThreadPool {
 	 * @throws IllegalStateException if this pool has not been started yet.
 	 */
 	public void dispatch(Runnable runnable) {
-		if (!thread[0].isAlive())
+		if (runnable == null)
+			throw new NullPointerException("runnable is null");
+		if (!threads[0].isAlive())
 			throw new IllegalStateException("threads has not been started.");
-		queue.add(runnable);
-		notifyAll();
+		synchronized (this) {
+			if (queue.remainingCapacity() > 0) {
+				queue.add(runnable);
+				notifyAll();
+			}
+	//		else
+	//			System.out.println("queue.length < number of task");
+		}
 		// 柴田さん｢CPU使わないコードにしてください｣
 	}
 
 	class ThreadWrapper extends Thread{
 		ThreadPool monitor;
+		private boolean isContinue = true;
 		public ThreadWrapper(ThreadPool monitor) {
+			super();
 			this.monitor = monitor;
 		}
 		public void run() {
 			Runnable runnable = null;
-			while(true) {
-				try {
-					monitor.wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+			while(isContinue) {
+				if (runnable != null) {
+					runnable.run();
+					runnable = null;
 				}
 				synchronized (monitor) {
-					if (queue.size() > 0)
+					try {
+						monitor.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					if (queue.size() > 0) {
 						runnable = queue.remove();
+					}
 				}
-				if (runnable != null)
-					runnable.run();
-				runnable = null;
 			}
+		}
+		public void setContinue(boolean isContinue) {
+			this.isContinue = isContinue;
 		}
 	}
 }

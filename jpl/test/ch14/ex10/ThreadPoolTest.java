@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -279,6 +280,7 @@ public class ThreadPoolTest {
         }
     }
 
+    @Ignore
     @Test
     public void testSimpleDispatch() {
         ThreadPool tp = new ThreadPool(1, 1);
@@ -290,6 +292,7 @@ public class ThreadPoolTest {
         assertEquals(1, activeThreadCount());
     }
 
+    @Ignore
     @Test
     public void testSimpleRepeatedDispatch() {
         ThreadPool tp = new ThreadPool(1, 1);
@@ -305,6 +308,7 @@ public class ThreadPoolTest {
         assertEquals(1, activeThreadCount());
     }
 
+    @Ignore
     @Test
     public void testComplexRepeatedDispatch() {
         ThreadPool tp = new ThreadPool(10, 10);
@@ -320,6 +324,7 @@ public class ThreadPoolTest {
         assertEquals(1, activeThreadCount());
     }
 
+    @Ignore
     @Test
     public void testComplexRepeatedDispatch2() {
         ThreadPool tp = new ThreadPool(10, 10);
@@ -343,6 +348,7 @@ public class ThreadPoolTest {
         assertEquals(1, activeThreadCount());
     }
 
+    @Ignore
     @Test
     public void testLatchSimpleDispatch() {
         final int numberOfThreads = 10;
@@ -371,6 +377,7 @@ public class ThreadPoolTest {
         assertEquals(1, activeThreadCount());
     }
 
+    @Ignore
     @Test
     public void testLatchComplexDispatch() {
         final int numberOfThreads = 10;
