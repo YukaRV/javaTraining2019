@@ -197,14 +197,14 @@ public class Game {
 
 		int boardLength = this.boardLength;
 		int[][] board = new int[boardLength][boardLength];
-		for (int i = 0;i < num_of_player;i++)
-			for (int j = 0;j < num_of_player;j++)
+		for (int i = 0;i < boardLength;i++)
+			for (int j = 0;j < boardLength;j++)
 				board[i][j] = this.board[i][j];
 
 		game.curPlayer = curPlayer;
 		game.winner = winner;
 		game.playerOrder = playerOrder;
 		game.board = board;
-		return this;
+		return game;
 	}
 }
