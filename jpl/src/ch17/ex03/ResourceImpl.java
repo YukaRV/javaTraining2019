@@ -1,5 +1,7 @@
 package ch17.ex03;
 
+import java.util.WeakHashMap;
+
 import ch17.ex03.ResourceManager.Resource;
 
 // TODO 17.3
@@ -7,19 +9,20 @@ import ch17.ex03.ResourceManager.Resource;
 // リソース実装クラスを書き直しなさい。
 
 public class ResourceImpl implements Resource{
-	int keyHash;
 	boolean needsRelease = false;
+	WeakHashMap<Object, Object> keys;
 
 	public ResourceImpl(Object key) {
-		keyHash = System.identityHashCode(key);
 
 		// ..外部リソースの設定
-
+		// 外部リソースの代わり
+		Object resourceObj = new Object();
+		keys.put(key, resourceObj);
 		needsRelease = true;
 	}
 
 	public void use(Object key, Object... args) {
-		if (System.identityHashCode(key) != keyHash)
+		if (!keys.containsKey(key))
 			throw new IllegalArgumentException("wrong key");
 
 		// ... リソースの使用 ...
