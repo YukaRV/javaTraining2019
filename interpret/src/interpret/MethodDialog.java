@@ -58,9 +58,13 @@ public class MethodDialog implements ActionListener, KeyListener, ItemListener{
 		frame.getContentPane().add(okPanel, BorderLayout.SOUTH);
 	}
 	public void selectObject(Object rootObj) {
-		init(rootObj);
-        frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
+		try {
+			init(rootObj);
+	        frame.setLocationRelativeTo(null);
+			frame.setVisible(true);
+		} catch (Exception e) {
+			printError(e);
+		}
 	}
 	private void setValue() {
 		mtd = (Method)selector.getSelectedItem();
@@ -179,6 +183,13 @@ public class MethodDialog implements ActionListener, KeyListener, ItemListener{
 		if (e.getSource() == selector) {
 			refleshInputVariablePanel();
 			refleshInputPanel();
+		}
+	}
+	private void printError(Exception e) {
+		if (exception == null) {
+			e.printStackTrace();
+		} else {
+			exception.printStackTrace(e);
 		}
 	}
 }

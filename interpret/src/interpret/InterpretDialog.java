@@ -8,7 +8,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -71,9 +70,9 @@ public class InterpretDialog implements ActionListener,KeyListener,ItemListener{
 	}
 	public void selectObject(Class<?> root) {
 		try {
-		init(root);
-        frame.setLocationRelativeTo(null);
-		frame.setVisible(true);
+			init(root);
+	        frame.setLocationRelativeTo(null);
+			frame.setVisible(true);
 		} catch (Exception e) {
 			printError(e);
 		}
@@ -83,17 +82,6 @@ public class InterpretDialog implements ActionListener,KeyListener,ItemListener{
 		case 0:
 			try {
 				val = TypeUtil.of(text.getText(),root);
-			} catch (InvocationTargetException e) {
-				Throwable cause = e.getCause();
-			    if (cause instanceof Error) {
-			      throw (Error) cause;
-			    } else if (cause instanceof RuntimeException) {
-			      printError((RuntimeException) cause);
-			    } else if (cause instanceof Exception) {
-			      throw new RuntimeException(cause);
-			    } else {
-			      throw new InternalError(cause);
-			    }
 			} catch (Exception e) {
 				printError(e);
 			}

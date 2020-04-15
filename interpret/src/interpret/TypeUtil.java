@@ -1,6 +1,7 @@
 package interpret;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
@@ -32,24 +33,37 @@ public class TypeUtil {
     }
 	// 型がプログラマ視点で分からない場合のキャスト
 	public static Object of(Object value, Class<?> cls) throws Exception {
-		Object wrpObj;
-		if (wrpClass.containsKey(cls)) {
-			Class<?> castClass = wrpClass.get(cls);
-			Class<?> curClass = value.getClass();
-			if (castClass.equals(curClass)) {
-				return value;
-			}
-//			Class<?> strClass = String.class;
-			Constructor<?> constructor = castClass.getConstructor(curClass);
-			wrpObj = constructor.newInstance(value);
-			Method m;
-			m = wrpObj.getClass().getMethod(cls.toString() + "Value");
+		try {
+			Object wrpObj;
+			if (wrpClass.containsKey(cls)) {
+				Class<?> castClass = wrpClass.get(cls);
+				Class<?> curClass = value.getClass();
+				if (castClass.equals(curClass)) {
+					return value;
+				}
+//				Class<?> strClass = String.class;
+				Constructor<?> constructor = castClass.getConstructor(curClass);
+				wrpObj = constructor.newInstance(value);
+				Method m;
+				m = wrpObj.getClass().getMethod(cls.toString() + "Value");
 
-			return m.invoke(wrpObj);
-		} else {
-			Class<?> castClass = cls;
-			Constructor<?> constructor = castClass.getConstructor(String.class);
-			return constructor.newInstance(value);
+				return m.invoke(wrpObj);
+			} else {
+				Class<?> castClass = cls;
+				Constructor<?> constructor = castClass.getConstructor(String.class);
+				return constructor.newInstance(value);
+			}
+		} catch (InvocationTargetException e) {
+			Throwable cause = e.getCause();
+		    if (cause instanceof Error) {
+		      throw (Error) cause;
+		    } else if (cause instanceof RuntimeException) {
+		      throw ((RuntimeException) cause);
+		    } else if (cause instanceof Exception) {
+		      throw new RuntimeException(cause);
+		    } else {
+		      throw new InternalError(cause);
+		    }
 		}
     }
 

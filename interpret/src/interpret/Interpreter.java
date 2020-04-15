@@ -285,4 +285,17 @@ public class Interpreter {
 			return obj.toString();
 		}
 	}
+
+	private void throwError(InvocationTargetException e) {
+		Throwable cause = e.getCause();
+	    if (cause instanceof Error) {
+	      throw (Error) cause;
+	    } else if (cause instanceof RuntimeException) {
+	      throw ((RuntimeException) cause);
+	    } else if (cause instanceof Exception) {
+	      throw new RuntimeException(cause);
+	    } else {
+	      throw new InternalError(cause);
+	    }
+	}
 }
