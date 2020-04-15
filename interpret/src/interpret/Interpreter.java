@@ -1,12 +1,14 @@
 package interpret;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-
-import javax.swing.JOptionPane;
 
 public class Interpreter {
 	private HashMap<String, Object> variableList;
@@ -24,26 +26,22 @@ public class Interpreter {
 	public HashMap<String, Object> getVariables() {
 		return variableList;
 	}
-	public Object getNewObject(String objectClass) {
+	/**
+	 * 引数なしインスタンスを生成<br/>
+	 * やってることはclassをStringから生成してexecuteConstructorだけだから統合して消していい
+	 * @param objectClass
+	 * @return
+	 */
+	public Class<?> getClass(String objectClass) {
 		Class<?> cls;
-		Object obj;
 		try {
 			cls = Class.forName(objectClass);
 		} catch (ClassNotFoundException e) {
 			exception.printStackTrace(e);
 			return null;
 		}
-
-		try {
-			obj = cls.newInstance();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-			return null;
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-			return null;
-		}
-		return obj;
+//		obj = executeConstructor(cls);
+		return cls;
 	}
 	/**
 	 * 変数の追加
@@ -77,7 +75,16 @@ public class Interpreter {
 		return getFields(getVariable(variableName));
 	}
 	public Field[] getFields(Object variable) {
-		return variable.getClass().getFields();
+		Class<?> cls = variable.getClass();
+		Field[] curAllField = cls.getDeclaredFields();
+		Field[] publicAllField = cls.getFields();
+		ArrayList<Field> allField = new ArrayList<>();
+		for (Field curField: curAllField) {
+			if (!isPublic(curField)) allField.add(curField);
+		}
+		allField.addAll(Arrays.asList(publicAllField));
+		Field[] result = new Field[allField.size()];
+		return allField.toArray(result);
 	}
 	public Field getField(String variableName, String fieldName) {
 		return getField(getVariable(variableName),fieldName);
@@ -92,17 +99,35 @@ public class Interpreter {
 	 */
 	public Field getField(Object variable, String fieldName) {
 		try {
-			return variable.getClass().getField(fieldName);
-		} catch (NoSuchFieldException | SecurityException e) {
+			Field[] allField = getFields(variable);
+			for (Field field: allField) {
+				if (field.getName().equals(fieldName)) {
+					return field;
+				}
+			}
+			return null;
+		} catch (SecurityException e) {
+			printError(e);
+			return null;
+		}
+	}
+	public Object getFieldObject(String variableName, String fieldName) {
+		Field field = getField(variableName, fieldName);
+		Object object;
+		try {
+			field.setAccessible(true);
+			object = field.get(getVariable(variableName));
+			return object;
+		} catch (IllegalArgumentException | IllegalAccessException e) {
 			printError(e);
 			return null;
 		}
 	}
 
-	public boolean updateField(String variableName, String fieldName, String updateValue) {
+	public boolean updateField(String variableName, String fieldName, Object updateValue) {
 		return updateField(getVariable(variableName), getField(variableName, fieldName), updateValue);
 	}
-	public boolean updateField(Object variable, Field field, String updateValue) {
+	public boolean updateField(Object variable, Field field, Object updateValue) {
 		Class<?> type = field.getType();
 		Object updateObj = typeCast(updateValue, type);
 		if (updateObj == null) {
@@ -110,10 +135,14 @@ public class Interpreter {
 		}
 		field.setAccessible(true);
 		try {
-			print(field.get(variable));
+			String resultStr = "update: "
+								+ stringExpression(field.get(variable))
+								+ " -> ";
 
 			field.set(variable, updateObj);
-			print(field.get(variable));
+
+			resultStr += stringExpression(field.get(variable));
+			print(resultStr);
 
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			printError(e);
@@ -132,58 +161,90 @@ public class Interpreter {
 		return getMethods(getVariable(variableName));
 	}
 	public Method[] getMethods(Object variable) {
+		Method[] mtds1 = variable.getClass().getMethods();
+		Method[] mtds2 = variable.getClass().getDeclaredMethods();
+		ArrayList<Method> mtds = new ArrayList<>();
+		for (Method m: mtds1) {
+			if (m.getDeclaringClass() == Object.class)
+				continue;
+			if (isPublic(m))
+				continue;
+			mtds.add(m);
+		}
+		mtds.addAll(Arrays.asList(mtds2));
 		return variable.getClass().getMethods();
 	}
-	public Method getMethod(String variableName, String methodName) {
-		return getMethod(getVariable(variableName), methodName);
+	public Method getMethod(String variableName, String methodName, Class<?> ...parametricTypes) {
+		return getMethod(getVariable(variableName), methodName, parametricTypes);
 	}
-	public Method getMethod(Object variable, String methodName) {
+	public Method getMethod(Object variable, String methodName, Class<?> ...parametricTypes) {
+		Class<?> cls = variable.getClass();
 		try {
-			return variable.getClass().getMethod(methodName);
+			Method mtd = cls.getMethod(methodName, parametricTypes);
+			return mtd;
+		} catch (NoSuchMethodException | SecurityException e) {
+		}
+		try {
+			return cls.getDeclaredMethod(methodName, parametricTypes);
 		} catch (NoSuchMethodException | SecurityException e) {
 			printError(e);
 			return null;
 		}
 	}
+
 	/**
-	 * TODO (Class<Type>,Object)[]を引数にとれるよう変更
-	 * @param variableName
-	 * @param methodName
+	 * メソッドを実行する<br/>
+	 * 引数の型が分かっていないと実行できないため、Methodの特定が必須
+	 * @param variable
+	 * @param method
 	 * @param args
 	 */
-	public Object executeMethod(String variableName, String methodName, String[] args) {
-		return executeMethod(variableName, methodName, args);
-	}
-	public Object executeMethod(Object variable, String methodName, String[] args) {
-		return executeMethod(variable, getMethod(variable, methodName), args);
-	}
-	public Object executeMethod(Object variable, Method method, String[] args) {
-		Type[] types = method.getGenericParameterTypes();
-		Object[] argsObj = new Object[args.length];
-		for (int i = 0;i < args.length;i++) {
-			Class<?> cls;
-			try {
-				String typeName = types[i].getTypeName();
-				cls = TypeUtil.wrpStrClass.containsKey(typeName) ? TypeUtil.wrpStrClass.get(typeName):Class.forName(typeName);
-			} catch (ClassNotFoundException e) {
-				exception.printStackTrace(e);
-				return null;
-			}
-			Object castedArg = typeCast(args[i],cls);
-			if (castedArg == null) {
-				JOptionPane.showMessageDialog(null, "失敗");
-				return null;
-			}
-			argsObj[i] = castedArg;
-		}
-		// TODO 引数の型変換
-		return executeMethod(variable, method, argsObj);
-	}
-	private Object executeMethod(Object variable,Method method, Object ...args) {
+	public Object executeMethod(Object variable, Method method, Object ...args) {
 		try {
 			method.setAccessible(true);
 			return method.invoke(variable, args);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			printError(e);
+			return null;
+		}
+	}
+
+	public Constructor<?>[] getConstructors(String variableName) {
+		return getConstructors(getVariable(variableName));
+	}
+	public Constructor<?>[] getConstructors(Object variable) {
+		return getConstructors(variable.getClass());
+	}
+	public Constructor<?>[] getConstructors(Class<?> variableClass) {
+		return variableClass.getConstructors();
+	}
+	public Constructor<?> getConstructor(String variableName, Class<?> ...parametricTypes) {
+		return getConstructor(getVariable(variableName), parametricTypes);
+	}
+	public Constructor<?> getConstructor(Object variable, Class<?> ...parametricTypes) {
+		try {
+			return variable.getClass().getConstructor(parametricTypes);
+		} catch (NoSuchMethodException | SecurityException e) {
+			printError(e);
+			return null;
+		}
+	}
+	public Object executeConstructor(Class<?> cls, Object ...args) {
+		try {
+			return executeConstructor(cls.getConstructor(),args);
+		} catch (NoSuchMethodException | SecurityException e) {
+			printError(e);
+			return null;
+		}
+	}
+	public Object executeConstructor(Constructor<?> constructor, Object ...args) {
+		try {
+			constructor.setAccessible(true);
+			if (args.length == 0)
+				return constructor.newInstance();
+			return constructor.newInstance(args);
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
 			printError(e);
 			return null;
 		}
@@ -206,11 +267,22 @@ public class Interpreter {
 	private Object typeCast(Object obj,Class<?> cls) {
 		try {
 			return TypeUtil.of(obj,cls);
-		} catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException
-				| IllegalArgumentException | InvocationTargetException e) {
+		} catch (Exception e) {
 			printError(e);
 			return null;
 		}
 	}
 
+	static boolean isPublic(Member mem) {
+		return ((mem.getModifiers() & Modifier.PUBLIC) != 0);
+	}
+	static String stringExpression(Object obj) {
+		Class<?> objType = obj.getClass();
+		if (objType.equals(String.class)) {
+			return "\""+obj.toString()+"\"";
+		}
+		else {
+			return obj.toString();
+		}
+	}
 }

@@ -1,6 +1,7 @@
-package interpret;
+package _interpret;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
@@ -31,16 +32,11 @@ public class TypeUtil {
         return (T) value;
     }
 	// 型がプログラマ視点で分からない場合のキャスト
-	public static Object of(Object value, Class<?> cls) throws Exception {
+	public static Object of(Object value, Class<?> cls) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Object wrpObj;
 		if (wrpClass.containsKey(cls)) {
 			Class<?> castClass = wrpClass.get(cls);
-			Class<?> curClass = value.getClass();
-			if (castClass.equals(curClass)) {
-				return value;
-			}
-//			Class<?> strClass = String.class;
-			Constructor<?> constructor = castClass.getConstructor(curClass);
+			Constructor<?> constructor = castClass.getConstructor(String.class);
 			wrpObj = constructor.newInstance(value);
 			Method m;
 			m = wrpObj.getClass().getMethod(cls.toString() + "Value");

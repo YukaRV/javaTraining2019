@@ -1,6 +1,5 @@
-package interpret;
+package _interpret;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -17,7 +16,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
-import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -71,7 +69,6 @@ public class InterpretUI {
 	public String test2="";
 
 	Interpreter interpreter;
-    InterpretDialog itprDialog;
 
 	public InterpretUI() {
 		init();
@@ -79,8 +76,8 @@ public class InterpretUI {
 	public void start() {
 		setMenu();
 		setLayout();
+		mainFrame.add(new JPanel());
 		interpreter = new Interpreter(console,exception);
-		itprDialog = new InterpretDialog(interpreter,exception);
 	}
 	public void setVisible(boolean b) {
 		mainFrame.setVisible(b);
@@ -98,16 +95,16 @@ public class InterpretUI {
 	}
 	public void setLayout() {
         JPanel contentPane = new JPanel();
-        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
+        contentPane.setLayout(new GridLayout(1,1));
         editor = new EditorPanel();
         console = new ConsolePanel();
         JScrollPane consoleScroll = new JScrollPane(console);
         exception = new ExceptionPanel();
         JScrollPane exceptionScroll = new JScrollPane(exception);
-        mainFrame.getContentPane().setLayout(new GridLayout(1,3));
-        mainFrame.getContentPane().add(editor);
-        mainFrame.getContentPane().add(consoleScroll);
-        mainFrame.getContentPane().add(exceptionScroll);
+        contentPane.add(editor);
+        contentPane.add(consoleScroll);
+        contentPane.add(exceptionScroll);
+        mainFrame.add(contentPane);
         mainFrame.setVisible(true);
 	}
 
@@ -121,11 +118,7 @@ public class InterpretUI {
 	public void setNewObject() {
 		String objectClass = JOptionPane.showInputDialog("name of class");
 		// 存在をチェック
-		Class<?> cls = interpreter.getClass(objectClass);
-		if (cls == null) return;
-		InterpretDialog d = new InterpretDialog(interpreter,exception);
-		d.selectObject(cls);
-		Object obj = d.getObject();
+		Object obj = interpreter.getNewObject(objectClass);
 		if (obj == null) {
 			return;
 		}
@@ -133,10 +126,6 @@ public class InterpretUI {
 		String objectName = JOptionPane.showInputDialog("name of variable");
 		interpreter.setVariable(objectName, obj);
 		editor.print(interpreter.getVariables());
-	}
-	public void showObject() {
-		itprDialog.selectObject(Color.class);
-		itprDialog.getObject();
 	}
 	public void updateField() {
 		String variableName = JOptionPane.showInputDialog("name of variable");
@@ -149,7 +138,7 @@ public class InterpretUI {
 		Field field = (Field)JOptionPane.showInputDialog(null, "", "name of method", JOptionPane.PLAIN_MESSAGE, null, fields, fields[0]);
 
 		String updateValue = JOptionPane.showInputDialog("update value");
-		interpreter.updateField(obj, field, updateValue);
+		interpreter.updateField(interpreter.getVariable(variableName), field, updateValue);
 	}
 	public void executeMethod() {
 		// 変数を選択
@@ -159,11 +148,17 @@ public class InterpretUI {
 		}
 
 		// メソッドを選択
-		MethodDialog d = new MethodDialog(interpreter,exception);
-		d.selectObject(interpreter.getVariable(variableName));
-		Object result = d.getObject();
+		Method[] methods = interpreter.getMethods(variableName);
+		Method method = (Method)JOptionPane.showInputDialog(null, "", "name of method", JOptionPane.PLAIN_MESSAGE, null, methods, methods[0]);
 
-		// 必要ならvariableにする
+		// 引数の指定
+		// TODO: 型指定で複数引数
+		Type[] param = method.getGenericParameterTypes();
+		String[] argsStr = new String[param.length];
+		for (int i = 0;i < param.length;i++) {
+			argsStr[i] = JOptionPane.showInputDialog(i+" argument: "+param[i].getTypeName());
+		}
+		System.out.println(interpreter.executeMethod(interpreter.getVariable(variableName), method, argsStr));
 	}
 
 	static class InterpretMenu extends MenuBar implements ActionListener {
@@ -172,8 +167,7 @@ public class InterpretUI {
 			ADD_OBJECT("オブジェクトの追加"),
 			SHOW_OBJECT("オブジェクトの表示"),
 			UPDATE_FIELD("フィールドの編集"),
-			EXECUTE_METHOD("メソッドの実行"),
-			DEBUG("debug");
+			EXECUTE_METHOD("メソッドの実行");
 			String label;
 			MenuLabel(String label) {
 				this.label = label;
@@ -207,14 +201,10 @@ public class InterpretUI {
 				String itemLabel = ((MenuItem)e.getSource()).getLabel();
 				if (itemLabel == MenuLabel.ADD_OBJECT.getLabel()) {
 					ui.setNewObject();
-				} else if(itemLabel == MenuLabel.SHOW_OBJECT.getLabel()) {
-					// TODO: 修正
 				} else if (itemLabel == MenuLabel.UPDATE_FIELD.getLabel()) {
 					ui.updateField();
 				} else if (itemLabel == MenuLabel.EXECUTE_METHOD.getLabel()) {
 					ui.executeMethod();
-				} else if(itemLabel == MenuLabel.DEBUG.getLabel()) {
-					ui.showObject();
 				} else {
 					JOptionPane.showMessageDialog(null, "未実装");
 				}
@@ -264,6 +254,4 @@ public class InterpretUI {
 		if (Modifier.isInterface(modis)) str += "interface ";
 		return str;
 	}
-
-
 }
