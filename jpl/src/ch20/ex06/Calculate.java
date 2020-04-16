@@ -13,7 +13,7 @@ import java.util.HashMap;
 // もし、興味があれば、AttributedImplで使用されたHashMapを使用してみなさい。
 // そううすれば、任意の個数の名前付定数を使用できます。
 
-public class FindChar {
+public class Calculate {
 	public static void main(String[] args) throws IOException {
 		int b;
 		InputStreamReader isr = new InputStreamReader(System.in);
