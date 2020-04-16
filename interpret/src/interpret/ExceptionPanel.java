@@ -9,7 +9,7 @@ public class ExceptionPanel extends JPanel{
 	JLabel label = new JLabel("Exception");
 	String text;
 	public ExceptionPanel() {
-		setBackground(Color.YELLOW);
+		setBackground(Color.LIGHT_GRAY);
 		text = "";
 		add(label);
 	}

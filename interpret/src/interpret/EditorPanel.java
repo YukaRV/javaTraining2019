@@ -11,7 +11,7 @@ public class EditorPanel extends JPanel{
 	JLabel label = new JLabel("Editor");
 	String text;
 	public EditorPanel() {
-		setBackground(Color.WHITE);
+		setBackground(Color.LIGHT_GRAY);
 		text = "";
 		add(label);
 	}

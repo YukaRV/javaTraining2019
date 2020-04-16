@@ -9,7 +9,7 @@ public class ConsolePanel extends JPanel{
 	JLabel label = new JLabel("Console");
 	String text;
 	public ConsolePanel() {
-		setBackground(Color.GREEN);
+		setBackground(Color.LIGHT_GRAY);
 		text = "";
 		add(label);
 	}

@@ -100,12 +100,13 @@ public class InterpretUI {
         JPanel contentPane = new JPanel();
         contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
         editor = new EditorPanel();
+        JScrollPane editorScroll = new JScrollPane(editor);
         console = new ConsolePanel();
         JScrollPane consoleScroll = new JScrollPane(console);
         exception = new ExceptionPanel();
         JScrollPane exceptionScroll = new JScrollPane(exception);
         mainFrame.getContentPane().setLayout(new GridLayout(1,3));
-        mainFrame.getContentPane().add(editor);
+        mainFrame.getContentPane().add(editorScroll);
         mainFrame.getContentPane().add(consoleScroll);
         mainFrame.getContentPane().add(exceptionScroll);
         mainFrame.setVisible(true);
