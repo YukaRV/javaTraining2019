@@ -8,8 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-// 11.2
-// 第3章のAttrクラスを、ジェネリッククラスとして書き直しなさい。
+// 20.7
+// 第3章のAttrクラスへ、DataOutputStreamにオブジェクトの内容を書き込むメソッドを追加しなさい。
+// また、DataInputStreamから状態を読み込むコンストラクタを追加しなさい。
 
 public class Attr<T> {
 	private final String name;
