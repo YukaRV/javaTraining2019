@@ -47,11 +47,9 @@ import javax.swing.JScrollPane;
 // 練習問題で指定された操作ができることに加えて、以下のことも行ってもらいます。
 //• GUI で作成する(AWT/Swing のどちらでも良い)
 //		console, exceptionでの表示は可能
-//		TODO 可視範囲がおかしいのをなおすこと、Editorで表示するものを追加すること
-//• TODO java.awt.FrameのsetVisible()、setTitle()、setSize()、setBackground()を呼び出すデモができること
+//• java.awt.FrameのsetVisible()、setTitle()、setSize()、setBackground()を呼び出すデモができること
 //• コンストラクタやメソッドの呼び出しで発生した例外も正しく表示されること
 //• TODO 参照型の配列を生成して、各要素に個別に参照を代入できること
-//• TODO private final のインスタンスフィールドの書き換えもできること
 //• 自分自身を起動できること
 //Interpret の課題は、講師から OK がでるまで何度も再提出(ただし、3 回が限度)してもらい確認
 //を行います。OK が出ない場合には、受講資格を失うこともありますので、注意してください。なお、
