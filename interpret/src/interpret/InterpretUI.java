@@ -1,6 +1,7 @@
 package interpret;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -10,12 +11,7 @@ import java.awt.MenuBar;
 import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -23,7 +19,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-// TODO 16.09など使って正確なデータをとってくる
 // 16.6
 // 要求された型のオブジェクトを生成し、ユーザがそのオブジェクトのフィールドを調べて、
 // フィールドを修正できるInterpretプログラムを作成しなさい。
@@ -32,7 +27,7 @@ import javax.swing.JScrollPane;
 // オブジェクトに対してメソッドを呼び出すようにInterpretプログラムを修正しなさい。
 // 戻り値やスローされた例外を適切に表示するようにしなさい。
 //
-// 16.8 TODO
+// 16.8
 // Interpretプログラムをさらに修正して、任意のクラスのコンストラクタをユーザが呼び出せるようにしなさい。
 // その際にどんな例外も表示しなさい。また、オブジェクトの生成が成功したら、
 // そのオブジェクトのメソッドをユーザが呼び出せるようにしなさい。
@@ -46,15 +41,14 @@ import javax.swing.JScrollPane;
 // 練習問題 16.6、16.7、16.8、16.10 をそれぞれ作成する代わりに、Interpret プログラムを1つ作成してもらいます。
 // 練習問題で指定された操作ができることに加えて、以下のことも行ってもらいます。
 //• GUI で作成する(AWT/Swing のどちらでも良い)
-//		console, exceptionでの表示は可能
 //• java.awt.FrameのsetVisible()、setTitle()、setSize()、setBackground()を呼び出すデモができること
 //• コンストラクタやメソッドの呼び出しで発生した例外も正しく表示されること
 //• TODO 参照型の配列を生成して、各要素に個別に参照を代入できること
 //• 自分自身を起動できること
-//Interpret の課題は、講師から OK がでるまで何度も再提出(ただし、3 回が限度)してもらい確認
-//を行います。OK が出ない場合には、受講資格を失うこともありますので、注意してください。なお、
-//3回でOKになればよいですが、1回目は6割以上はできている必要があります。
 
+// 変数作るところで配列を選択できるようにする
+// Dialogに配列が指定されたら値入れるところを配列の長さを指定できるようにして、縦にボタン生成する
+// 時間があったら値のプレビュー
 
 public class InterpretUI {
 	JFrame mainFrame;
@@ -85,7 +79,7 @@ public class InterpretUI {
 	}
 	public void init() {
 		mainFrame = new JFrame();
-		dim = new Dimension(900,600);
+		dim = new Dimension(1200,600);
 		mainFrame.setSize(dim);
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setLocationRelativeTo(null);
@@ -95,19 +89,20 @@ public class InterpretUI {
 		mainFrame.setMenuBar(menuBar);
 	}
 	public void setLayout() {
-        JPanel contentPane = new JPanel();
-        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
-        editor = new EditorPanel();
-        JScrollPane editorScroll = new JScrollPane(editor);
-        console = new ConsolePanel();
-        JScrollPane consoleScroll = new JScrollPane(console);
-        exception = new ExceptionPanel();
-        JScrollPane exceptionScroll = new JScrollPane(exception);
-        mainFrame.getContentPane().setLayout(new GridLayout(1,3));
-        mainFrame.getContentPane().add(editorScroll);
-        mainFrame.getContentPane().add(consoleScroll);
-        mainFrame.getContentPane().add(exceptionScroll);
-        mainFrame.setVisible(true);
+		JPanel contentPane = new JPanel();
+		contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.X_AXIS));
+		editor = new EditorPanel();
+		JScrollPane editorScroll = new JScrollPane(editor);
+		console = new ConsolePanel();
+		JScrollPane consoleScroll = new JScrollPane(console);
+		exception = new ExceptionPanel();
+		JScrollPane exceptionScroll = new JScrollPane(exception);
+		Container panel = mainFrame.getContentPane();
+		panel.setLayout(new GridLayout(1,3));
+		panel.add(editorScroll);
+		panel.add(consoleScroll);
+		panel.add(exceptionScroll);
+		mainFrame.setVisible(true);
 	}
 
 	protected void setGBC(GridBagConstraints gbc, int gridy, int gridx, int gridheight, int gridwidth, int anchor) {
@@ -119,6 +114,7 @@ public class InterpretUI {
 	}
 	public void setNewObject() {
 		String objectClass = JOptionPane.showInputDialog("name of class");
+		if (objectClass == null) return;
 		// 存在をチェック
 		Class<?> cls = interpreter.getClass(objectClass);
 		if (cls == null) return;
@@ -221,48 +217,5 @@ public class InterpretUI {
 		}
 
 	}
-
-	// 16.XXからコピー。TODO ちゃんと書きなおす
-	static String memberToString(Member mem) {
-		String memStr = getModifiersStr(mem);
-		if (mem instanceof Field) {
-			Field field = (Field)mem;
-			memStr += field.getName();
-			return memStr;
-		} else if (mem instanceof Constructor<?>) {
-			return mem.toString();
-		} else if (mem instanceof Method) {
-			Method method = (Method) mem;
-			Type rtn = method.getGenericReturnType();
-			memStr += rtn.toString() + " ";
-			memStr +=  method.getName() + "(";
-			Type[] param = method.getGenericParameterTypes();
-			for (int i = 0;i < param.length;i++) {
-				memStr += param[i].getTypeName();
-				if (i != param.length-1)
-					memStr += ",";
-			}
-			memStr += ")";
-			Type[] exc = method.getGenericExceptionTypes();
-			return memStr;
-		} else {
-			System.out.println("unknown type of member: " + mem.toString());
-			return "";
-		}
-	}
-	static String getModifiersStr(Member mem) {
-		String str = "";
-		int modis = mem.getModifiers();
-		if (Modifier.isPublic(modis)) str += "public ";
-		if (Modifier.isProtected(modis)) str += "protected ";
-		if (Modifier.isPrivate(modis)) str += "private ";
-		if (Modifier.isFinal(modis)) str += "final ";
-		if (Modifier.isStatic(modis)) str += "static ";
-		if (Modifier.isSynchronized(modis)) str += "synchronized ";
-		if (Modifier.isAbstract(modis)) str += "abstract ";
-		if (Modifier.isInterface(modis)) str += "interface ";
-		return str;
-	}
-
 
 }

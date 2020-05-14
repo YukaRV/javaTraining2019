@@ -232,12 +232,18 @@ public class InterpretDialog implements ActionListener,KeyListener,ItemListener{
 				for (int i = 0;i < variableBtns.length;i++) {
 					JButton btn = variableBtns[i];
 					if (srcObj == btn) {
-						InterpretDialog d = new InterpretDialog(itpr,exception);
 						Constructor<?> cstr = (Constructor<?>)selector.getSelectedItem();
 						Class<?> cls = cstr.getParameterTypes()[i];
-						d.selectObject(cls);
-						variable[i] = d.getObject();
-						System.out.println();
+						if (cls.isArray()) {
+							ArrayDialog d = new ArrayDialog(frame,itpr,exception);
+							d.selectObject(cls);
+							variable[i] = d.getObject();
+							System.out.println();
+						}else {
+							InterpretDialog d = new InterpretDialog(itpr,exception);
+							d.selectObject(cls);
+							variable[i] = d.getObject();
+						}
 					}
 				}
 			}

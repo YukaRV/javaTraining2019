@@ -1,5 +1,6 @@
 package interpret;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -32,14 +33,21 @@ public class TypeUtil {
         return (T) value;
     }
 	// 型がプログラマ視点で分からない場合のキャスト
-	public static Object of(Object value, Class<?> cls) throws Exception {
+	public static<T> T of(Object value, Class<T> cls) throws Exception {
 		try {
 			Object wrpObj;
 			if (wrpClass.containsKey(cls)) {
 				Class<?> castClass = wrpClass.get(cls);
 				Class<?> curClass = value.getClass();
 				if (castClass.equals(curClass)) {
-					return value;
+					return (T)value;
+				}
+				System.out.println(castClass.equals(Character.class));
+				System.out.println(curClass.equals(String.class));
+				if (castClass.equals(Character.class) && curClass.equals(String.class)) {
+					char[] valChar = String.valueOf(value).toCharArray();
+					value = valChar[0];
+					curClass = char.class;
 				}
 //				Class<?> strClass = String.class;
 				Constructor<?> constructor = castClass.getConstructor(curClass);
@@ -47,11 +55,11 @@ public class TypeUtil {
 				Method m;
 				m = wrpObj.getClass().getMethod(cls.toString() + "Value");
 
-				return m.invoke(wrpObj);
+				return (T)m.invoke(wrpObj);
 			} else {
 				Class<?> castClass = cls;
 				Constructor<?> constructor = castClass.getConstructor(String.class);
-				return constructor.newInstance(value);
+				return (T)constructor.newInstance(value);
 			}
 		} catch (InvocationTargetException e) {
 			Throwable cause = e.getCause();
@@ -66,6 +74,26 @@ public class TypeUtil {
 		    }
 		}
     }
+
+	public static<T> T[] castArray(Object[] array, Class<T> cls){
+		try {
+			System.out.println(cls.getName());
+			Class<?> castClass;
+			if (wrpClass.containsKey(cls)) {
+				castClass = wrpClass.get(cls);
+			} else {
+				castClass = cls;
+			}
+			T[] res = (T[])Array.newInstance(castClass, array.length);
+			for (int i = 0;i < res.length;i++) {
+				res[i] = (T)of(array[i],cls);
+			}
+			return res;
+		} catch (Exception e) {
+			System.out.println(e);
+			return null;
+		}
+	}
 
 	public static boolean isInteger(String num) {
 		try {

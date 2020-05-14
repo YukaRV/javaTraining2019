@@ -242,6 +242,8 @@ public class Interpreter {
 			constructor.setAccessible(true);
 			if (args.length == 0)
 				return constructor.newInstance();
+			// String[]とintの引数ならうまくいく。
+			// char[]とかプリミティブ配列がだめ
 			return constructor.newInstance(args);
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
